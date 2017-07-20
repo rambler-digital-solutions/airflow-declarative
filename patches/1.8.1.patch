@@ -1,0 +1,133 @@
+From 3e6331bdc48fd93567d5aad3a1b7275003b19f77 Mon Sep 17 00:00:00 2001
+From: Alexander Shorin <a.shorin@rambler-co.ru>
+Date: Tue, 23 Aug 2016 12:17:21 +0300
+Subject: [PATCH] Support declarative dags provided by airflow-declarative project
+
+---
+ airflow/models.py | 46 ++++++++++++++++++++++++++++++++++++++++------
+ setup.py          |  5 +++++
+ 2 files changed, 45 insertions(+), 6 deletions(-)
+
+diff --git a/airflow/models.py b/airflow/models.py
+index 646f74b9..e5c4d3c8 100755
+--- a/airflow/models.py
++++ b/airflow/models.py
+@@ -94,6 +94,12 @@ try:
+ except:
+     pass
+
++try:
++    import airflow_declarative
++except ImportError:
++    airflow_declarative = None
++
++
+ if 'mysql' in settings.SQL_ALCHEMY_CONN:
+     LongText = LONGTEXT
+ else:
+@@ -242,14 +248,18 @@ class DagBag(BaseDagBag, LoggingMixin):
+             return found_dags
+
+         mods = []
++
++        file_name, file_ext = os.path.splitext(os.path.split(filepath)[-1])
++
+         if not zipfile.is_zipfile(filepath):
+-            if safe_mode and os.path.isfile(filepath):
++            if safe_mode and os.path.isfile(filepath) and file_ext not in {'.yml', '.yaml'}:
+                 with open(filepath, 'rb') as f:
+                     content = f.read()
+                     if not all([s in content for s in (b'DAG', b'airflow')]):
+                         self.file_last_changed[filepath] = file_last_changed_on_disk
+                         return found_dags
+
++        if file_ext == '.py':
+             self.logger.debug("Importing {}".format(filepath))
+             org_mod_name, _ = os.path.splitext(os.path.split(filepath)[-1])
+             mod_name = ('unusual_prefix_' +
+@@ -268,7 +278,23 @@ class DagBag(BaseDagBag, LoggingMixin):
+                     self.import_errors[filepath] = str(e)
+                     self.file_last_changed[filepath] = file_last_changed_on_disk
+
+-        else:
++            self.fill_found_dags(filepath, mods, found_dags)
++
++        elif file_ext in {'.yaml', '.yml'}:
++            if airflow_declarative is None:
++                return found_dags
++
++            self.logger.debug("Importing {}".format(filepath))
++            for dag in airflow_declarative.from_path(filepath):
++                if not dag.full_filepath:
++                    dag.full_filepath = filepath
++                dag.is_subdag = False
++                dag.module_name = os.path.basename(filepath)
++                self.bag_dag(dag, parent_dag=dag, root_dag=dag)
++                found_dags.append(dag)
++                found_dags += dag.subdags
++
++        elif zipfile.is_zipfile(filepath):
+             zip_file = zipfile.ZipFile(filepath)
+             for mod in zip_file.infolist():
+                 head, _ = os.path.split(mod.filename)
+@@ -301,6 +327,15 @@ class DagBag(BaseDagBag, LoggingMixin):
+                         self.import_errors[filepath] = str(e)
+                         self.file_last_changed[filepath] = file_last_changed_on_disk
+
++            self.fill_found_dags(filepath, mods, found_dags)
++
++        else:
++            return found_dags
++
++        self.file_last_changed[filepath] = file_last_changed_on_disk
++        return found_dags
++
++    def fill_found_dags(self, filepath, mods, found_dags):
+         for m in mods:
+             for dag in list(m.__dict__.values()):
+                 if isinstance(dag, DAG):
+@@ -311,9 +346,6 @@ class DagBag(BaseDagBag, LoggingMixin):
+                     found_dags.append(dag)
+                     found_dags += dag.subdags
+
+-        self.file_last_changed[filepath] = file_last_changed_on_disk
+-        return found_dags
+-
+     @provide_session
+     def kill_zombies(self, session=None):
+         """
+@@ -407,7 +439,9 @@ class DagBag(BaseDagBag, LoggingMixin):
+                             continue
+                         mod_name, file_ext = os.path.splitext(
+                             os.path.split(filepath)[-1])
+-                        if file_ext != '.py' and not zipfile.is_zipfile(filepath):
++                        if file_ext not in {'.py', '.yml', '.yaml'}:
++                            continue
++                        if not zipfile.is_zipfile(filepath):
+                             continue
+                         if not any(
+                                 [re.findall(p, filepath) for p in patterns]):
+diff --git a/setup.py b/setup.py
+index 7426ce97..87be0ba6 100644
+--- a/setup.py
++++ b/setup.py
+@@ -192,6 +192,10 @@ devel_minreq = devel + mysql + doc + password + s3 + cgroups
+ devel_hadoop = devel_minreq + hive + hdfs + webhdfs + kerberos
+ devel_all = devel + all_dbs + doc + samba + s3 + slack + crypto + oracle + docker
+
++declarative = [
++    'airflow-declarative',
++]
+
+ def do_setup():
+     check_previous()
+@@ -247,6 +251,7 @@ def do_setup():
+             'datadog': datadog,
+             'devel': devel_minreq,
+             'devel_hadoop': devel_hadoop,
++            'declarative': declarative,
+             'doc': doc,
+             'docker': docker,
+             'druid': druid,
+--
+2.13.0

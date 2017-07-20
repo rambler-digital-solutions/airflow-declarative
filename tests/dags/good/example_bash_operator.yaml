@@ -1,0 +1,62 @@
+#
+# Copyright 2017, Rambler Digital Solutions
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# Source:
+# https://github.com/apache/incubator-airflow/blob/1.8.1/airflow/example_dags/example_bash_operator.py
+# Except we don't support cron-style schedule interval.
+
+dags:
+  example_bash_operator:
+    args:
+      dagrun_timeout: 1h
+      default_args:
+        owner: airflow
+      start_date: 2017-07-27  # relative start_date not supported yet
+      schedule_interval: 1d
+    operators:
+      run_this_last:
+        class: airflow.operators.dummy_operator:DummyOperator
+      runme_0:
+        class: airflow.operators.bash_operator:BashOperator
+        args:
+          bash_command: echo "{{ task_instance_key_str }}" && sleep 1
+      runme_1:
+        class: airflow.operators.bash_operator:BashOperator
+        args:
+          bash_command: echo "{{ task_instance_key_str }}" && sleep 1
+      runme_2:
+        class: airflow.operators.bash_operator:BashOperator
+        args:
+          bash_command: echo "{{ task_instance_key_str }}" && sleep 1
+      also_run_this:
+        class: airflow.operators.bash_operator:BashOperator
+        args:
+          bash_command: echo "run_id={{ run_id }} | dag_run={{ dag_run }}"
+      run_after_loop:
+        class: airflow.operators.bash_operator:BashOperator
+        args:
+          bash_command: echo 1
+    flow:
+      runme_0:
+      - run_after_loop
+      runme_1:
+      - run_after_loop
+      runme_2:
+      - run_after_loop
+      also_run_this:
+      - run_this_last
+      run_after_loop:
+      - run_this_last

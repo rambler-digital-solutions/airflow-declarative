@@ -1,0 +1,23 @@
+[run]
+branch = True
+source =
+    src
+    tests
+include =
+    src/**/*.py
+    tests/*.py
+    tests/**/*.py
+omit =
+    tests/utils.py
+    tests/nocover/*.py
+    tests/nocover/**/*.py
+
+[report]
+precision = 2
+exclude_lines =
+    @abc.abstractmethod
+    @abc.abstractproperty
+    NotImplementedError
+    pragma: no cover
+    __repr__
+    __str__
