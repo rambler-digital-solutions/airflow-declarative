@@ -60,7 +60,7 @@ def pytest_generate_tests(metafunc):
         zip(list_examples('schema-errors'),
             itertools.repeat(trafaret_config.ConfigError)),
         zip(list_examples('logic-errors'),
-            itertools.repeat(RuntimeError)),
+            itertools.repeat((RuntimeError, TypeError))),
         zip(list_examples('airflow-errors'),
             itertools.repeat(airflow.exceptions.AirflowException)),
     ])

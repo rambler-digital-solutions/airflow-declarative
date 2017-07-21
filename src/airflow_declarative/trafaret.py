@@ -42,6 +42,12 @@ from trafaret import (
 )
 
 
+try:
+    from inspect import signature
+except ImportError:  # pragma: no cover
+    from funcsigs import signature  # noqa
+
+
 __all__ = (
     'Any',
     'Bool',
@@ -59,6 +65,8 @@ __all__ = (
     'TimeDelta',
 
     'cast_interval',
+    'check_for_class_callback_collisions',
+    'ensure_callback_args',
 )
 
 
@@ -170,4 +178,45 @@ def cast_interval(value):
         value = datetime.timedelta(seconds=value)
     elif not isinstance(value, datetime.timedelta):
         raise t.DataError('invalid interval value %s' % value)
+    return value
+
+
+def check_for_class_callback_collisions(value):
+    if 'class' in value:
+        if 'callback' in value or 'callback_args' in value:
+            raise t.DataError('when `class` specified, there should be no'
+                              ' `callback` and `callback_args`')
+    return value
+
+
+def ensure_callback_args(value):
+    callback = value.get('callback')
+    if not callback:
+        return value
+
+    kwargs = value.get('callback_args', {})
+    callback_params = set(kwargs) | {'context'}
+
+    sig = signature(callback)
+
+    required_params = {
+        name for name, param in sig.parameters.items()
+        if param.default is param.empty and param.kind != 2
+    }
+    missed_params = required_params - callback_params
+
+    if missed_params:
+        raise t.DataError('Missed parameters for %s: %s'
+                          '' % (callback, ', '.join(missed_params)))
+
+    all_params = {
+        name for name, param in sig.parameters.items()
+        if param.kind != 2  # ignore vararg
+    }
+    unknown_params = callback_params - all_params
+
+    if unknown_params:
+        raise t.DataError('Unexpected parameters for %s: %s'
+                          '' % (callback, ', '.join(unknown_params)))
+
     return value

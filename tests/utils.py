@@ -35,3 +35,31 @@ def list_examples(kind):
 
 def noop_callback(*args, **kwargs):
     pass
+
+
+def operator(context):
+    pass
+
+
+def sensor(context):
+    return True
+
+
+class Operator(object):
+
+    def __init__(self, context, param):
+        self.context = context
+        self.param = param
+
+    def __call__(self):
+        pass
+
+
+class Sensor(object):
+
+    def __init__(self, context, param):
+        self.context = context
+        self.param = param
+
+    def __call__(self):
+        return True

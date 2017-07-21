@@ -40,6 +40,8 @@ from .trafaret import (
     String,
     TimeDelta,
     cast_interval,
+    check_for_class_callback_collisions,
+    ensure_callback_args,
 )
 
 
@@ -116,17 +118,29 @@ SENSOR_ARGS = OPERATOR_ARGS + Dict(
     timeout=POSITIVE_INT,
 ).make_optional('*')
 
-OPERATOR = Dict({
-    Key('class'): CLASS,
-    Key('args'): OPERATOR_ARGS.allow_extra('*'),
-}).make_optional('args')
+OPERATOR = (
+    Dict({
+        Key('class'): CLASS,
+        Key('callback'): CLASS | CALLBACK,
+        Key('callback_args'): PARAMS,
+        Key('args'): OPERATOR_ARGS.allow_extra('*'),
+    }).make_optional('*') &
+    check_for_class_callback_collisions &
+    ensure_callback_args
+)
 
 OPERATORS = Mapping(STRING, OPERATOR)
 
-SENSOR = Dict({
-    Key('class'): CLASS,
-    Key('args'): SENSOR_ARGS.allow_extra('*'),
-}).make_optional('args')
+SENSOR = (
+    Dict({
+        Key('class'): CLASS,
+        Key('callback'): CLASS | CALLBACK,
+        Key('callback_args'): PARAMS,
+        Key('args'): SENSOR_ARGS.allow_extra('*'),
+    }).make_optional('*') &
+    check_for_class_callback_collisions &
+    ensure_callback_args
+)
 
 SENSORS = Mapping(STRING, SENSOR)
 

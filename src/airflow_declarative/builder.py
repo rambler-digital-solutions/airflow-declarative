@@ -25,11 +25,14 @@ from __future__ import (
 from .schema import ensure_schema
 
 
-def build_dags(schema, dag_class=None):
+def build_dags(schema,
+               dag_class=None, operator_class=None, sensor_class=None):
     """
     :param dict schema: Airflow declarative DAGs schema.
     :param dag_class: DAG class. When not specified, the ``airflow.models.DAG``
                                  get used via implicit import.
+    :param type operator_class: Airflow operator class.
+    :param type sensor_class: Airflow sensor class.
     :rtype: list[airflow.models.DAG]
     """
     schema = ensure_schema(schema)
@@ -42,28 +45,38 @@ def build_dags(schema, dag_class=None):
     #
     if dag_class is None:  # pragma: no cover
         from airflow import DAG as dag_class
+    if operator_class is None:  # pragma: no cover
+        from .operators import GenericOperator as operator_class
+    if sensor_class is None:  # pragma: no cover
+        from .operators import GenericSensor as sensor_class
 
     return [build_dag(dag_id, dag_schema,
-                      dag_class=dag_class)
+                      dag_class=dag_class,
+                      operator_class=operator_class,
+                      sensor_class=sensor_class)
             for dag_id, dag_schema in schema['dags'].items()]
 
 
-def build_dag(dag_id, schema, dag_class):
+def build_dag(dag_id, schema, dag_class, operator_class, sensor_class):
     """
     :param str dag_id: DAG ID.
     :param dict schema: DAG definition schema.
     :param dag_class: DAG class.
+    :param type operator_class: Airflow operator class.
+    :param type sensor_class: Airflow sensor class.
     :rtype: airflow.models.DAG
     """
     dag = dag_class(dag_id=dag_id, **schema.get('args', {}))
 
     sensors = {
-        sensor_id: build_sensor(dag, sensor_id, sensor_schema)
+        sensor_id: build_sensor(dag, sensor_id, sensor_schema,
+                                sensor_class=sensor_class)
         for sensor_id, sensor_schema in schema.get('sensors', {}).items()
     }
 
     operators = {
-        operator_id: build_operator(dag, operator_id, operator_schema)
+        operator_id: build_operator(dag, operator_id, operator_schema,
+                                    operator_class=operator_class)
         for operator_id, operator_schema in schema.get('operators', {}).items()
     }
 
@@ -77,36 +90,54 @@ def build_dag(dag_id, schema, dag_class):
     return dag
 
 
-def build_sensor(dag, sensor_id, sensor_schema):
+def build_sensor(dag, sensor_id, sensor_schema, sensor_class):
     """
     :param DAG dag: Airflow DAG instance.
     :param str sensor_id: Sensor ID.
     :param dict sensor_schema: Sensor definition schema.
+    :param type sensor_class: Airflow sensor class.
     :rtype: airflow.operators.sensors.BaseSensorOperator
     """
-    return build_task(dag, sensor_id, sensor_schema)
+    return build_task(dag, sensor_id, sensor_schema,
+                      task_class=sensor_class)
 
 
-def build_operator(dag, operator_id, operator_schema):
+def build_operator(dag, operator_id, operator_schema, operator_class):
     """
     :param DAG dag: Airflow DAG instance.
     :param str operator_id: Operator ID.
     :param dict operator_schema: Operator definition schema.
+    :param type operator_class: Airflow operator class.
     :rtype: airflow.operators.BaseOperator
     """
-    return build_task(dag, operator_id, operator_schema)
+    return build_task(dag, operator_id, operator_schema,
+                      task_class=operator_class)
 
 
-def build_task(dag, task_id, schema):
+def build_task(dag, task_id, schema, task_class):
     """
     :param airflow.models.DAG dag: DAG object instance.
     :param str task_id: Task ID.
     :param dict schema: Task schema.
+    :param type task_class: Airflow operator class.
     :rtype: airflow.operators.BaseOperator
     """
-    task_class = schema['class']
     args = schema.get('args', {})
-    return task_class(task_id=task_id, dag=dag, **args)
+
+    callback = schema.get('callback', None)
+    if callback is not None:
+        callback_args = schema.get('callback_args', {})
+        return task_class(_callback=callback, _callback_args=callback_args,
+                          task_id=task_id, dag=dag, **args)
+
+    task_class = schema.get('class', None)  # type: type
+    if task_class is not None:
+        return task_class(task_id=task_id, dag=dag, **args)
+
+    # Basically, you cannot reach here - schema validation should prevent this.
+    # But in case if you're lucky here is your exception.
+    raise RuntimeError('nothing to do with %s: %s'
+                       '' % (task_id, schema))  # pragma: no cover
 
 
 def build_flow(tasks, schema):

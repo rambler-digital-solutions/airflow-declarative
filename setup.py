@@ -17,6 +17,7 @@
 #
 
 import os
+import sys
 
 from setuptools import find_packages, setup
 from setuptools.command.sdist import sdist as sdist_orig
@@ -76,7 +77,7 @@ setup(
     ],
     install_requires=[
         'trafaret-config==1.0.1',
-    ],
+    ] + (['funcsigs'] if sys.version_info[:2] == (2, 7) else []),
     tests_require=[
         'apache-airflow==1.8.1',
         'pytest==3.1.3',
@@ -88,6 +89,7 @@ setup(
     extras_require={
         'develop': [
             'apache-airflow==1.8.1',
+            'mock==2.0.0',
             'pytest==3.1.3',
             'pytest-cov==2.5.1',
             'pytest-flake8==0.8.1',
