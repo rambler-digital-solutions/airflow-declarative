@@ -26,21 +26,22 @@ dags:
         owner: airflow
       start_date: 2017-07-27  # relative start_date not supported yet
       schedule_interval: 1d
+    do:
+    - operators:
+        runme_{{ item }}:
+          class: airflow.operators.bash_operator:BashOperator
+          args:
+            bash_command: '{% raw %} echo "{{ task_instance_key_str }}" && sleep 1 {% endraw%}'
+      flow:
+        runme_{{ item }}:
+        - run_after_loop
+      with_items:
+      - 0
+      - 1
+      - 2
     operators:
       run_this_last:
         class: airflow.operators.dummy_operator:DummyOperator
-      runme_0:
-        class: airflow.operators.bash_operator:BashOperator
-        args:
-          bash_command: echo "{{ task_instance_key_str }}" && sleep 1
-      runme_1:
-        class: airflow.operators.bash_operator:BashOperator
-        args:
-          bash_command: echo "{{ task_instance_key_str }}" && sleep 1
-      runme_2:
-        class: airflow.operators.bash_operator:BashOperator
-        args:
-          bash_command: echo "{{ task_instance_key_str }}" && sleep 1
       also_run_this:
         class: airflow.operators.bash_operator:BashOperator
         args:
@@ -50,12 +51,6 @@ dags:
         args:
           bash_command: echo 1
     flow:
-      runme_0:
-      - run_after_loop
-      runme_1:
-      - run_after_loop
-      runme_2:
-      - run_after_loop
       also_run_this:
       - run_this_last
       run_after_loop:

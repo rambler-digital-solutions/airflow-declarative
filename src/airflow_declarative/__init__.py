@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-from . import builder, schema
+from . import builder, schema, transformer
 
 
 __all__ = (
@@ -39,4 +39,14 @@ def from_dict(schema):
     :param dict schema:
     :rtype: list[airflow.DAG]
     """
-    return builder.build_dags(schema)
+    return builder.build_dags(transform(schema))
+
+
+def transform(schema):
+    """Returns back transformed schema suitable to build DAGs with all
+    variables expanded and all templates rendered.
+
+    :param dict schema: Airflow YAML schema as a template.
+    :rtype: dict
+    """
+    return transformer.transform(schema)

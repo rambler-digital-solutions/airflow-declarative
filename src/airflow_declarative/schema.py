@@ -163,8 +163,21 @@ DAG_ARGS = Dict(
     start_date=DATE,
 ).make_optional('*')
 
+
+WITH_ITEMS = List(ANY)
+
+DO_TEMPLATE = Dict(
+    operators=OPERATORS,
+    sensors=SENSORS,
+    flow=FLOW,
+    with_items=WITH_ITEMS
+).make_optional('operators', 'sensors', 'flow')
+
+DO_TEMPLATES = List(DO_TEMPLATE)
+
 DAG = Dict(
     args=DAG_ARGS,
+    do=DO_TEMPLATES,
     operators=OPERATORS,
     sensors=SENSORS,
     flow=FLOW,

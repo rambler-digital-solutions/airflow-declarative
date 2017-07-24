@@ -76,6 +76,7 @@ setup(
         'pytest-runner',
     ],
     install_requires=[
+        'jinja2>=2.8',
         'trafaret-config==1.0.1',
     ] + (['funcsigs'] if sys.version_info[:2] == (2, 7) else []),
     tests_require=[
