@@ -15,6 +15,13 @@
 # limitations under the License.
 #
 
+from __future__ import (
+    absolute_import,
+    division,
+    print_function,
+    unicode_literals,
+)
+
 from . import builder, schema, transformer
 
 
@@ -50,3 +57,11 @@ def transform(schema):
     :rtype: dict
     """
     return transformer.transform(schema)
+
+
+def render(path):
+    """Prints out transformed schema. Useful for debug.
+
+    :param str path: Airflow YAML schema as a template.
+    """
+    print(schema.dump(transformer.transform(schema.from_path(path))))

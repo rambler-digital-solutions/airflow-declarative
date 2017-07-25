@@ -22,7 +22,11 @@ from __future__ import (
     unicode_literals,
 )
 
+import datetime
+import types
+
 import trafaret_config
+import yaml
 
 from .trafaret import (
     Any,
@@ -63,6 +67,55 @@ def ensure_schema(schema):
     :rtype: dict
     """
     return SCHEMA.check_and_return(schema)
+
+
+def dump(schema, *args, **kwargs):
+    """Serializes Airflow DAGs schema back to YAML.
+
+    :param dict schema: Airflow DAGs schema.
+    :param args: Custom :func:`yaml.dump` args.
+    :param kwargs: Custom :func:`yaml.dump` kwargs.
+    :returns: YAML content.
+    :rtype: str
+    """
+    kwargs.setdefault('default_flow_style', False)
+    kwargs.setdefault('default_style', '')
+    return yaml.dump(schema, Dumper=Dumper, *args, **kwargs)
+
+
+class Dumper(yaml.SafeDumper):
+
+    def ignore_aliases(self, data):
+        return True
+
+    def represent_timedelta(self, delta):
+        seconds = delta.seconds
+        if not seconds:
+            value = '%dd' % delta.days
+        elif seconds % 86400 == 0:
+            value = '%dd' % (seconds / 86400)
+        elif seconds % 3600 == 0:
+            value = '%dh' % (seconds / 3600)
+        elif seconds % 60 == 0:
+            value = '%dm' % (seconds / 60)
+        else:
+            value = '%ds' % seconds
+        return self.represent_scalar('tag:yaml.org,2002:str', value)
+
+    def represent_callable(self, obj):
+        value = '%s:%s' % (obj.__module__, obj.__name__)
+        return self.represent_scalar('tag:yaml.org,2002:str', value)
+
+
+Dumper.add_representer(datetime.timedelta, Dumper.represent_timedelta)
+Dumper.add_representer(type, Dumper.represent_callable)
+Dumper.add_representer(types.FunctionType, Dumper.represent_callable)
+
+# These gives support of dict/list/tuple subclasses serialization like
+# namedtuples, trafaret_config.simple.ConfigDict and else.
+Dumper.add_multi_representer(dict, Dumper.represent_dict)
+Dumper.add_multi_representer(list, Dumper.represent_list)
+Dumper.add_multi_representer(tuple, Dumper.represent_list)
 
 
 ANY = Any()

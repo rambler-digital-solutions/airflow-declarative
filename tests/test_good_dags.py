@@ -25,8 +25,10 @@ from __future__ import (
 import os
 
 import airflow
+import yaml
 
 import airflow_declarative
+import airflow_declarative.schema
 
 from .utils import list_examples
 
@@ -44,3 +46,10 @@ def test_good_dags(path):
     dags = airflow_declarative.from_path(path)
     assert isinstance(dags, list)
     assert all(isinstance(dag, airflow.DAG) for dag in dags)
+
+
+def test_serde(path):
+    schema0 = airflow_declarative.schema.from_path(path)
+    content = airflow_declarative.schema.dump(schema0)
+    schema1 = airflow_declarative.schema.ensure_schema(yaml.load(content))
+    assert schema0 == schema1

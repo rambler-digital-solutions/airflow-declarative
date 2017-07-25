@@ -31,24 +31,13 @@ from jinja2.ext import Extension
 from jinja2.lexer import Token
 from trafaret import str_types
 
-from .schema import ensure_schema
+from .schema import dump, ensure_schema
 
 
 try:
     from functools import reduce
 except ImportError:
     pass
-
-
-class Dumper(yaml.SafeDumper):
-    pass
-
-
-# This gives support of dict/list/tuple subclasses serialization like
-# namedtuples, trafaret_config.simple.ConfigDict and else.
-Dumper.add_multi_representer(dict, Dumper.represent_dict)
-Dumper.add_multi_representer(list, Dumper.represent_list)
-Dumper.add_multi_representer(tuple, Dumper.represent_list)
 
 
 def yaml_filter(obj):
@@ -58,7 +47,7 @@ def yaml_filter(obj):
         return ''
     else:
         try:
-            return yaml.dump(obj, Dumper=Dumper, default_flow_style=False)
+            return dump(obj)
         except Exception as exc:
             raise RuntimeError(
                 'Unable to serialize {!r} to YAML because {}.'
