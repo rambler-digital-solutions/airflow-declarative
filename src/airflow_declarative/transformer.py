@@ -125,6 +125,11 @@ def transform_strategy(schema, template):
 
 def transform_with_items(schema, template):
     items = template['with_items']
+    if isinstance(items, dict):
+        if set(items) == {'using'}:
+            items = items['using']
+    if hasattr(items, '__call__'):
+        items = items()
     if not isinstance(items, Iterable):
         raise RuntimeError('bad with_items template: {}'.format(items))
     for key in {'operators', 'sensors', 'flow'}:

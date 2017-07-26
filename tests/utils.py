@@ -45,6 +45,10 @@ def sensor(context):
     return True
 
 
+def gen_items():
+    return range(3)
+
+
 class Operator(object):
 
     def __init__(self, context, param):
