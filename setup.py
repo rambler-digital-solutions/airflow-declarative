@@ -69,6 +69,20 @@ setup(
     author_email='um@rambler-co.ru',
     url='https://github.com/rambler-digital-solutions/airflow-declarative',
 
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: Apache Software License',
+        'Operating System :: MacOS :: MacOS X',
+        'Operating System :: Microsoft :: Windows',
+        'Operating System :: POSIX',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python',
+        'Topic :: Software Development :: Libraries',
+    ],
+
     package_dir={'': 'src'},
     packages=find_packages('src'),
 
