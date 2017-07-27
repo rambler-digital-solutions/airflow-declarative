@@ -102,7 +102,8 @@ ENV.add_extension(YamlExtension)
 def transform(schema):
     schema0 = ensure_schema(schema)
     schema1 = transform_templates(schema0)
-    return schema1
+    schema2 = transform_defaults(schema1)
+    return schema2
 
 
 def transform_templates(schema):
@@ -202,3 +203,23 @@ def merge_mappings(base, other):
 
 def merge_iterable(base, other):
     return list(chain(base, other))
+
+
+def transform_defaults(schema):
+    for dag_id, dag_schema in schema['dags'].items():
+        defaults = dag_schema.pop('defaults', {})
+        if not defaults:
+            continue
+        for key in {'sensors', 'operators'}:
+            if key in dag_schema and key in defaults:
+                transform_apply_tasks_defaults(dag_schema[key], defaults[key])
+    return schema
+
+
+def transform_apply_tasks_defaults(tasks, defaults):
+    for task_id, task_schema in tasks.items():
+        tasks[task_id] = transform_apply_task_defaults(task_schema, defaults)
+
+
+def transform_apply_task_defaults(task, defaults):
+    return merge_mappings(task, defaults)

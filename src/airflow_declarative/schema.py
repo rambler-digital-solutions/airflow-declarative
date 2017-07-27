@@ -227,8 +227,22 @@ DO_TEMPLATE = Dict(
 
 DO_TEMPLATES = List(DO_TEMPLATE)
 
+OPERATOR_DEFAULTS = Dict(
+    args=OPERATOR_ARGS
+)
+
+SENSOR_DEFAULTS = Dict(
+    args=SENSOR_ARGS
+)
+
+DEFAULTS = Dict(
+    operators=OPERATOR_DEFAULTS,
+    sensors=SENSOR_DEFAULTS,
+).make_optional('*')
+
 DAG = Dict(
     args=DAG_ARGS,
+    defaults=DEFAULTS,
     do=DO_TEMPLATES,
     operators=OPERATORS,
     sensors=SENSORS,
