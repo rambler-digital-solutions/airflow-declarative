@@ -67,6 +67,9 @@ setup(
 
     author='Usermodel Team @ Rambler Digital Solutions',
     author_email='um@rambler-co.ru',
+    maintainer='Alexander Shorin',
+    maintainer_email='kxepal@gmail.com',
+
     url='https://github.com/rambler-digital-solutions/airflow-declarative',
 
     classifiers=[
