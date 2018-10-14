@@ -1,0 +1,32 @@
+language: python
+
+# Python 3.7 requires sudo in Travis.
+# See: https://github.com/travis-ci/travis-ci/issues/9815
+sudo: required
+dist: xenial
+
+python:
+  - "2.7"
+  - "3.5"
+  - "3.6"
+#  - "3.7"  # Not declared in tox.ini yet
+
+install: pip install tox-travis tox
+
+# Used by the `test` stage.
+script: tox
+
+stages:
+  - test
+  - lint
+
+jobs:
+  include:
+
+    # The `test` stage using the `python` matrix defined above
+    # is included implicitly.
+
+    - stage: lint
+      name: "Linting"
+      python: "3.6"
+      script: TOXENV=lint tox
