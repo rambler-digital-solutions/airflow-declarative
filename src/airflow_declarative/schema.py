@@ -66,7 +66,7 @@ def ensure_schema(schema):
     :returns: Airflow DAGs schema.
     :rtype: dict
     """
-    return SCHEMA.check_and_return(schema)
+    return SCHEMA.check(schema)
 
 
 def dump(schema, *args, **kwargs):
@@ -123,7 +123,7 @@ BOOLEAN = Bool()
 CALLBACK = Callback()
 CLASS = Class()
 DATE = Date()
-EMAIL = Email()
+EMAIL = Email
 POSITIVE_INT = Int(gte=0)
 STRING = String()
 TIMEDELTA = TimeDelta()
@@ -218,12 +218,12 @@ DAG_ARGS = Dict(
 
 WITH_ITEMS = List(ANY) | Dict(using=CALLBACK)
 
-DO_TEMPLATE = Dict(
-    operators=OPERATORS,
-    sensors=SENSORS,
-    flow=FLOW,
-    with_items=WITH_ITEMS
-).make_optional('operators', 'sensors', 'flow')
+DO_TEMPLATE = Dict({
+    Key('operators', optional=True): OPERATORS,
+    Key('sensors', optional=True): SENSORS,
+    Key('flow', optional=True): FLOW,
+    Key('with_items'): WITH_ITEMS,
+})
 
 DO_TEMPLATES = List(DO_TEMPLATE)
 
@@ -254,7 +254,7 @@ DAGS = Mapping(
     value=DAG,
 )
 
-SCHEMA = Dict(
-    dags=DAGS,
-    version=VERSION,
-).make_optional('version')
+SCHEMA = Dict({
+    Key('dags'): DAGS,
+    Key('version', optional=True): VERSION,
+})
