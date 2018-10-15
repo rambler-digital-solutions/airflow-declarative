@@ -87,6 +87,10 @@ def build_dag(dag_id, schema, dag_class, operator_class, sensor_class):
 
     build_flow(dict(operators, **sensors), schema.get('flow', {}))
 
+    if hasattr(dag, 'test_cycle'):
+        # Since Airflow 1.10
+        dag.test_cycle()
+
     return dag
 
 
