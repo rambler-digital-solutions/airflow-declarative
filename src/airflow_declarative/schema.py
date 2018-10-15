@@ -41,6 +41,7 @@ from .trafaret import (
     Key,
     List,
     Mapping,
+    OptionalKey,
     String,
     TimeDelta,
     cast_interval,
@@ -132,52 +133,52 @@ INTERVAL = (TIMEDELTA | STRING | POSITIVE_INT) >> cast_interval
 PARAMS = Mapping(STRING, ANY)
 VERSION = Enum(1)
 
-OPERATOR_ARGS = Dict(
-    adhoc=BOOLEAN,
-    depends_on_past=BOOLEAN,
-    email=EMAIL,
-    email_on_failure=BOOLEAN,
-    email_on_retry=BOOLEAN,
-    end_date=DATE,
-    execution_timeout=INTERVAL,
-    max_retry_delay=POSITIVE_INT,
-    on_failure_callback=CALLBACK,
-    on_retry_callback=CALLBACK,
-    on_success_callback=CALLBACK,
-    owner=STRING,
-    params=PARAMS,
-    pool=STRING,
-    priority_weight=POSITIVE_INT,
-    queue=STRING,
-    resources=Dict(
-        cpu=POSITIVE_INT,
-        disk=POSITIVE_INT,
-        gpus=POSITIVE_INT,
-        ram=POSITIVE_INT,
-    ).make_optional('*'),
-    retries=POSITIVE_INT,
-    retry_delay=INTERVAL,
-    retry_exponential_backoff=BOOLEAN,
-    run_as_user=STRING,
-    sla=INTERVAL,
-    start_date=DATE,
-    trigger_rule=STRING,
-    wait_for_downstream=BOOLEAN,
-).make_optional('*')
+OPERATOR_ARGS = Dict({
+    OptionalKey('adhoc'): BOOLEAN,
+    OptionalKey('depends_on_past'): BOOLEAN,
+    OptionalKey('email'): EMAIL,
+    OptionalKey('email_on_failure'): BOOLEAN,
+    OptionalKey('email_on_retry'): BOOLEAN,
+    OptionalKey('end_date'): DATE,
+    OptionalKey('execution_timeout'): INTERVAL,
+    OptionalKey('max_retry_delay'): POSITIVE_INT,
+    OptionalKey('on_failure_callback'): CALLBACK,
+    OptionalKey('on_retry_callback'): CALLBACK,
+    OptionalKey('on_success_callback'): CALLBACK,
+    OptionalKey('owner'): STRING,
+    OptionalKey('params'): PARAMS,
+    OptionalKey('pool'): STRING,
+    OptionalKey('priority_weight'): POSITIVE_INT,
+    OptionalKey('queue'): STRING,
+    OptionalKey('resources'): Dict({
+        OptionalKey('cpu'): POSITIVE_INT,
+        OptionalKey('disk'): POSITIVE_INT,
+        OptionalKey('gpus'): POSITIVE_INT,
+        OptionalKey('ram'): POSITIVE_INT,
+    }),
+    OptionalKey('retries'): POSITIVE_INT,
+    OptionalKey('retry_delay'): INTERVAL,
+    OptionalKey('retry_exponential_backoff'): BOOLEAN,
+    OptionalKey('run_as_user'): STRING,
+    OptionalKey('sla'): INTERVAL,
+    OptionalKey('start_date'): DATE,
+    OptionalKey('trigger_rule'): STRING,
+    OptionalKey('wait_for_downstream'): BOOLEAN,
+})
 
-SENSOR_ARGS = OPERATOR_ARGS + Dict(
-    poke_interval=INTERVAL,
-    soft_fail=BOOLEAN,
-    timeout=POSITIVE_INT,
-).make_optional('*')
+SENSOR_ARGS = OPERATOR_ARGS + Dict({
+    OptionalKey('poke_interval'): INTERVAL,
+    OptionalKey('soft_fail'): BOOLEAN,
+    OptionalKey('timeout'): POSITIVE_INT,
+})
 
 OPERATOR = (
     Dict({
-        Key('class'): CLASS,
-        Key('callback'): CLASS | CALLBACK,
-        Key('callback_args'): PARAMS,
-        Key('args'): OPERATOR_ARGS.allow_extra('*'),
-    }).make_optional('*') &
+        OptionalKey('class'): CLASS,
+        OptionalKey('callback'): CLASS | CALLBACK,
+        OptionalKey('callback_args'): PARAMS,
+        OptionalKey('args'): OPERATOR_ARGS.allow_extra('*'),
+    }) &
     check_for_class_callback_collisions &
     ensure_callback_args
 )
@@ -186,11 +187,11 @@ OPERATORS = Mapping(STRING, OPERATOR)
 
 SENSOR = (
     Dict({
-        Key('class'): CLASS,
-        Key('callback'): CLASS | CALLBACK,
-        Key('callback_args'): PARAMS,
-        Key('args'): SENSOR_ARGS.allow_extra('*'),
-    }).make_optional('*') &
+        OptionalKey('class'): CLASS,
+        OptionalKey('callback'): CLASS | CALLBACK,
+        OptionalKey('callback_args'): PARAMS,
+        OptionalKey('args'): SENSOR_ARGS.allow_extra('*'),
+    }) &
     check_for_class_callback_collisions &
     ensure_callback_args
 )
@@ -202,26 +203,29 @@ FLOW = Mapping(
     value=List(STRING, min_length=1)
 )
 
-DAG_ARGS = Dict(
-    catchup=BOOLEAN,
-    concurrency=POSITIVE_INT,
-    dagrun_timeout=INTERVAL,
-    default_args=SENSOR_ARGS,  # Sensor args is a superset of all the args.
-    description=STRING,
-    end_date=DATE,
-    max_active_runs=POSITIVE_INT,
-    orientation=STRING,
-    schedule_interval=INTERVAL,
-    sla_miss_callback=CALLBACK,
-    start_date=DATE,
-).make_optional('*')
+DAG_ARGS = Dict({
+    OptionalKey('catchup'): BOOLEAN,
+    OptionalKey('concurrency'): POSITIVE_INT,
+    OptionalKey('dagrun_timeout'): INTERVAL,
+
+    # Sensor args is a superset of all the args.
+    OptionalKey('default_args'): SENSOR_ARGS,
+
+    OptionalKey('description'): STRING,
+    OptionalKey('end_date'): DATE,
+    OptionalKey('max_active_runs'): POSITIVE_INT,
+    OptionalKey('orientation'): STRING,
+    OptionalKey('schedule_interval'): INTERVAL,
+    OptionalKey('sla_miss_callback'): CALLBACK,
+    OptionalKey('start_date'): DATE,
+})
 
 WITH_ITEMS = List(ANY) | Dict(using=CALLBACK)
 
 DO_TEMPLATE = Dict({
-    Key('operators', optional=True): OPERATORS,
-    Key('sensors', optional=True): SENSORS,
-    Key('flow', optional=True): FLOW,
+    OptionalKey('operators'): OPERATORS,
+    OptionalKey('sensors'): SENSORS,
+    OptionalKey('flow'): FLOW,
     Key('with_items'): WITH_ITEMS,
 })
 
@@ -235,19 +239,19 @@ SENSOR_DEFAULTS = Dict(
     args=SENSOR_ARGS
 )
 
-DEFAULTS = Dict(
-    operators=OPERATOR_DEFAULTS,
-    sensors=SENSOR_DEFAULTS,
-).make_optional('*')
+DEFAULTS = Dict({
+    OptionalKey('operators'): OPERATOR_DEFAULTS,
+    OptionalKey('sensors'): SENSOR_DEFAULTS,
+})
 
-DAG = Dict(
-    args=DAG_ARGS,
-    defaults=DEFAULTS,
-    do=DO_TEMPLATES,
-    operators=OPERATORS,
-    sensors=SENSORS,
-    flow=FLOW,
-).make_optional('*')
+DAG = Dict({
+    OptionalKey('args'): DAG_ARGS,
+    OptionalKey('defaults'): DEFAULTS,
+    OptionalKey('do'): DO_TEMPLATES,
+    OptionalKey('operators'): OPERATORS,
+    OptionalKey('sensors'): SENSORS,
+    OptionalKey('flow'): FLOW,
+})
 
 DAGS = Mapping(
     key=STRING,
@@ -256,5 +260,5 @@ DAGS = Mapping(
 
 SCHEMA = Dict({
     Key('dags'): DAGS,
-    Key('version', optional=True): VERSION,
+    OptionalKey('version'): VERSION,
 })
