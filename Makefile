@@ -25,7 +25,7 @@ check: check-lint check-coverage
 
 .PHONY: check-coverage
 check-coverage:
-	@${PYTHON} -m pytest tests
+	@${PYTHON} -m pytest
 
 
 .PHONY: check-lint
