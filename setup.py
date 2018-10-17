@@ -106,6 +106,7 @@ setup(
             'pytest-cov==2.6.0',
             'pytest-sugar==0.9.1',
             'pytest==3.8.2',
+            'sphinx==1.8.1',
         ],
     },
 
