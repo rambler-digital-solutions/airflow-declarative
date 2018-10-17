@@ -90,6 +90,3 @@ ENV/
 
 # Rope project settings
 .ropeproject
-
-# Project specifics
-VERSION
