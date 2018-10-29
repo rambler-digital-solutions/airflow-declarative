@@ -61,6 +61,7 @@ __all__ = (
     'Key',
     'List',
     'Mapping',
+    'OptionalKey',
     'String',
     'TimeDelta',
 
@@ -68,6 +69,12 @@ __all__ = (
     'check_for_class_callback_collisions',
     'ensure_callback_args',
 )
+
+
+class OptionalKey(Key):
+    def __init__(self, name, **kwargs):
+        kwargs.setdefault('optional', True)
+        super(OptionalKey, self).__init__(name, **kwargs)
 
 
 class Date(t.Trafaret):
