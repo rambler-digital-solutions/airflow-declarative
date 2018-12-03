@@ -130,6 +130,9 @@ STRING = String()
 TIMEDELTA = TimeDelta()
 
 INTERVAL = (TIMEDELTA | STRING | POSITIVE_INT) >> cast_interval
+INTERVAL_INT_SECONDS = (TIMEDELTA | STRING | POSITIVE_INT) >> (
+    lambda x: cast_interval(x).total_seconds()
+)
 PARAMS = Mapping(STRING, ANY)
 VERSION = Enum(1)
 
@@ -167,7 +170,7 @@ OPERATOR_ARGS = Dict({
 })
 
 SENSOR_ARGS = OPERATOR_ARGS + Dict({
-    OptionalKey('poke_interval'): INTERVAL,
+    OptionalKey('poke_interval'): INTERVAL_INT_SECONDS,
     OptionalKey('soft_fail'): BOOLEAN,
     OptionalKey('timeout'): POSITIVE_INT,
 })

@@ -22,8 +22,6 @@ from __future__ import (
     unicode_literals,
 )
 
-import datetime
-
 import mock
 import pytest
 
@@ -52,7 +50,7 @@ def test_callbacks(dag):
     sensor_func = dag.task_dict['sensor_func']
     assert isinstance(sensor_func, GenericSensor)
     assert sensor_func.poke({}) is True
-    assert sensor_func.poke_interval == datetime.timedelta(seconds=10)
+    assert sensor_func.poke_interval == 10.0
 
     worker = dag.task_dict['worker']
     assert isinstance(worker, GenericOperator)
