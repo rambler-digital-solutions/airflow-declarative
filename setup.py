@@ -17,7 +17,6 @@
 #
 
 import os
-import sys
 
 from setuptools import find_packages, setup
 from setuptools.command.sdist import sdist as sdist_orig
@@ -89,57 +88,27 @@ setup(
     package_dir={'': 'src'},
     packages=find_packages('src'),
 
-    setup_requires=[
-        'pytest-runner',
-    ],
     install_requires=[
+        'apache-airflow',
+
+        'funcsigs; python_version<"3"',
         'jinja2>=2.8',
         'trafaret-config==1.0.1',
-    ] + (['funcsigs'] if sys.version_info[:2] == (2, 7) else []),
-    tests_require=[
-        'apache-airflow==1.8.1',
-        'pytest==3.1.3',
-        'pytest-cov==2.5.1',
-        'pytest-flake8==0.8.1',
-        'pytest-isort==0.1.0',
-        'pytest-sugar==0.8.0',
+        'trafaret<2,>=1.0',
     ],
     extras_require={
         'develop': [
-            'apache-airflow==1.8.1',
+            'flake8==3.5.0',
+            'isort==4.3.4',
             'mock==2.0.0',
-            'pytest==3.1.3',
-            'pytest-cov==2.5.1',
-            'pytest-flake8==0.8.1',
-            'pytest-isort==0.1.0',
-            'pytest-sugar==0.8.0',
+            'pylint==2.1.1; python_version>="3"',
+            'pytest-cov==2.6.0',
+            'pytest-sugar==0.9.1',
+            'pytest==3.8.2',
         ],
     },
 
     cmdclass={
         'sdist': sdist
-    },
-    command_options={
-        'aliases': {
-            'test': (__file__, 'pytest'),
-        },
-        'bdist_wheel': {
-            'universal': (__file__, True),
-        },
-        'pytest': {
-            'addopts': (__file__, ' '.join([
-                '--verbose',
-                '--showlocals',
-                '--cov=src',
-                '--cov=tests',
-                '--cov-branch',
-                '--cov-report=term-missing',
-                '--isort',
-                '--flake8',
-            ]))
-        },
-        'tools:pytest': {
-            'python_files': (__file__, 'tests'),
-        },
     },
 )
