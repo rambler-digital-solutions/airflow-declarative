@@ -79,9 +79,14 @@ class OptionalKey(Key):
 
 class Date(t.Trafaret):
 
-    def check_value(self, value):
+    def check_and_return(self, value):
+        if isinstance(value, datetime.datetime):
+            return value
         if not isinstance(value, datetime.date):
             self._failure('value should be a date', value=value)
+
+        time = datetime.datetime.min.time()
+        return datetime.datetime.combine(value, time)
 
     def __repr__(self):
         return '<Date>'
