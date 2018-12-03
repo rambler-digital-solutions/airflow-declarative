@@ -38,3 +38,7 @@ check-codestyle:
 	@${PYTHON} -m flake8 --statistics --show-source setup.py src/ tests/
 check-errors:
 	@${PYTHON} -m pylint --rcfile=.pylintrc -E src/$(PROJECT)
+
+.PHONY: docs
+docs:
+	make -C docs html
