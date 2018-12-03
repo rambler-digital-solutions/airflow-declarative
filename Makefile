@@ -16,7 +16,7 @@ develop:
 	# SLUGIFY_USES_TEXT_UNIDECODE=yes in your environment when you install
 	# or upgrade Airflow. To force installing the GPL version
 	# set AIRFLOW_GPL_UNIDECODE
-	SLUGIFY_USES_TEXT_UNIDECODE=yes pip install 'apache-airflow<1.10'
+	SLUGIFY_USES_TEXT_UNIDECODE=yes pip install 'apache-airflow<1.11,>=1.10'
 	SLUGIFY_USES_TEXT_UNIDECODE=yes pip install -e .[develop]
 
 .PHONY: check
