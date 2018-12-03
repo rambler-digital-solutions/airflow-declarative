@@ -1,10 +1,10 @@
-.. airflow-declarative documentation master file, created by
-   sphinx-quickstart on Wed Oct 17 10:01:45 2018.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to airflow-declarative's documentation!
 ===============================================
+
+:Documentation: https://airflow-declarative.readthedocs.io/
+:Source Code: https://github.com/rambler-digital-solutions/airflow-declarative
+:Issue Tracker: https://github.com/rambler-digital-solutions/airflow-declarative/issues
+:PyPI: https://pypi.org/project/airflow-declarative/
 
 .. toctree::
    :maxdepth: 2
@@ -16,5 +16,4 @@ Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
