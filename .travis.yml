@@ -27,6 +27,11 @@ jobs:
     # is included implicitly.
 
     - stage: lint
-      name: "Linting"
+      name: "Code linting"
       python: "3.6"
       script: TOXENV=lint tox
+
+    - stage: check-docs
+      name: "Docs check"
+      python: "3.6"
+      script: TOXENV=check-docs tox
