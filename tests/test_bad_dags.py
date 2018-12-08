@@ -33,11 +33,16 @@ import trafaret_config
 import airflow_declarative
 
 
+text_type = type(u'')  # six.text_type
+
+
 def param_id(param):
     if inspect.isclass(param):
         return param.__name__
-    else:
+    elif isinstance(param, text_type):
         return os.path.splitext(os.path.basename(param))[0]
+    else:
+        return None  # Let pytest use its default id generator
 
 
 def examples_path():
