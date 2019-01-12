@@ -28,6 +28,7 @@ import inspect
 import re
 
 import trafaret as t
+from croniter import croniter
 from trafaret import (
     Any,
     Bool,
@@ -191,6 +192,23 @@ def cast_interval(value):
     elif not isinstance(value, datetime.timedelta):
         raise t.DataError('invalid interval value %s' % value)
     return value
+
+
+def cast_crontab_or_interval(value):
+    try:
+        return cast_interval(value)
+    except ValueError:
+        if not isinstance(value, str):
+            raise
+        # This is definitely not a valid time interval.
+        # Perhaps this is a cron expression?
+        try:
+            # Airflow uses `croniter` as well.
+            croniter(value)
+        except ValueError as e:
+            raise t.DataError("Invalid crontab expression: %s" % str(e))
+        else:
+            return value
 
 
 def check_for_class_callback_collisions(value):
