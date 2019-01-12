@@ -44,6 +44,7 @@ from .trafaret import (
     OptionalKey,
     String,
     TimeDelta,
+    cast_crontab_or_interval,
     cast_interval,
     check_for_class_callback_collisions,
     ensure_callback_args,
@@ -129,6 +130,9 @@ POSITIVE_INT = Int(gte=0)
 STRING = String()
 TIMEDELTA = TimeDelta()
 
+CRONTAB_OR_INTERVAL = (TIMEDELTA | STRING | POSITIVE_INT) >> (
+    cast_crontab_or_interval
+)
 INTERVAL = (TIMEDELTA | STRING | POSITIVE_INT) >> cast_interval
 INTERVAL_INT_SECONDS = (TIMEDELTA | STRING | POSITIVE_INT) >> (
     lambda x: cast_interval(x).total_seconds()
@@ -221,7 +225,7 @@ DAG_ARGS = Dict({
     OptionalKey('end_date'): DATE,
     OptionalKey('max_active_runs'): POSITIVE_INT,
     OptionalKey('orientation'): STRING,
-    OptionalKey('schedule_interval'): INTERVAL,
+    OptionalKey('schedule_interval'): CRONTAB_OR_INTERVAL,
     OptionalKey('sla_miss_callback'): CALLBACK,
     OptionalKey('start_date'): DATE,
 })

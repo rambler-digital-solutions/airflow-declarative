@@ -1,5 +1,5 @@
 #
-# Copyright 2017, Rambler Digital Solutions
+# Copyright 2019, Rambler Digital Solutions
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 dags:
   dag:
     args:
-      schedule_interval: 0 0 * * *
       start_date: 2017-07-27
+      schedule_interval: 53 5 * * *
     operators:
-      task:
+      operator:
         class: airflow.operators.dummy_operator:DummyOperator

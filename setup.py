@@ -91,6 +91,7 @@ setup(
     install_requires=[
         'apache-airflow',
 
+        'croniter',
         'funcsigs; python_version<"3"',
         'jinja2>=2.8',
         'trafaret-config==1.0.1',
