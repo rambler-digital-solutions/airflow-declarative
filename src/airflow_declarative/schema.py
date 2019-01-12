@@ -144,6 +144,7 @@ OPERATOR_ARGS = Dict({
     OptionalKey('email_on_retry'): BOOLEAN,
     OptionalKey('end_date'): DATE,
     OptionalKey('execution_timeout'): INTERVAL,
+    OptionalKey('executor_config'): Dict(allow_extra='*'),
     OptionalKey('max_retry_delay'): POSITIVE_INT,
     OptionalKey('on_failure_callback'): CALLBACK,
     OptionalKey('on_retry_callback'): CALLBACK,
@@ -154,7 +155,7 @@ OPERATOR_ARGS = Dict({
     OptionalKey('priority_weight'): POSITIVE_INT,
     OptionalKey('queue'): STRING,
     OptionalKey('resources'): Dict({
-        OptionalKey('cpu'): POSITIVE_INT,
+        OptionalKey('cpus'): POSITIVE_INT,
         OptionalKey('disk'): POSITIVE_INT,
         OptionalKey('gpus'): POSITIVE_INT,
         OptionalKey('ram'): POSITIVE_INT,
@@ -165,8 +166,10 @@ OPERATOR_ARGS = Dict({
     OptionalKey('run_as_user'): STRING,
     OptionalKey('sla'): INTERVAL,
     OptionalKey('start_date'): DATE,
+    OptionalKey('task_concurrency'): POSITIVE_INT,
     OptionalKey('trigger_rule'): STRING,
     OptionalKey('wait_for_downstream'): BOOLEAN,
+    OptionalKey('weight_rule'): Enum('downstream', 'upstream', 'absolute'),
 })
 
 SENSOR_ARGS = OPERATOR_ARGS + Dict({
