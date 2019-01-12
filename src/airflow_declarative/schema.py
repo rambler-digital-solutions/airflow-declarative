@@ -183,7 +183,7 @@ OPERATOR = (
         OptionalKey('class'): CLASS,
         OptionalKey('callback'): CLASS | CALLBACK,
         OptionalKey('callback_args'): PARAMS,
-        OptionalKey('args'): OPERATOR_ARGS.allow_extra('*'),
+        OptionalKey('args'): (OPERATOR_ARGS + Dict()).allow_extra('*'),
     }) &
     check_for_class_callback_collisions &
     ensure_callback_args
@@ -196,7 +196,7 @@ SENSOR = (
         OptionalKey('class'): CLASS,
         OptionalKey('callback'): CLASS | CALLBACK,
         OptionalKey('callback_args'): PARAMS,
-        OptionalKey('args'): SENSOR_ARGS.allow_extra('*'),
+        OptionalKey('args'): (SENSOR_ARGS + Dict()).allow_extra('*'),
     }) &
     check_for_class_callback_collisions &
     ensure_callback_args
