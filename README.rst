@@ -64,15 +64,17 @@ DAGs via Python file anyway. That should looks something like this:
 
     import airflow_declarative
 
-    ROOT = '/usr/local/share/airflow'  # here should be yours path, whatever
+    # Assuming that the yaml dags are located in the same directory
+    # as this Python dag module:
+    ROOT = os.path.dirname(__file__)
+
     DAGS = [
-        airflow_declarative.from_path(os.path.join(root, item))
+        airflow_declarative.from_path(os.path.join(ROOT, item))
         for item in os.listdir(ROOT)
-        if item.endswith(('.yml', '.yaml'))
+        if item.endswith((".yml", ".yaml"))
     ]
 
-    globals().update({dag.dag_id: dag for dag in DAGS})
-
+    globals().update({dag.dag_id: dag for dags in DAGS for dag in dags})
 
 And place such file to ``AIRFLOW_HOME`` directory. Airflow will load dags in
 old fashion way.
