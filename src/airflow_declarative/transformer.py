@@ -22,6 +22,9 @@ from __future__ import (
     unicode_literals,
 )
 
+import json
+import shlex
+import subprocess
 from collections import Iterable, Mapping
 from itertools import chain
 
@@ -129,6 +132,8 @@ def transform_with_items(schema, template):
     if isinstance(items, dict):
         if set(items) == {'using'}:
             items = items['using']
+        elif set(items) == {'from_stdout'}:
+            items = from_stdout(items['from_stdout'])
     if hasattr(items, '__call__'):
         items = items()
     if not isinstance(items, Iterable):
@@ -142,6 +147,10 @@ def transform_with_items(schema, template):
         schema.setdefault(key, {})
         schema[key] = merge(schema[key], subschema)
     return schema
+
+
+def from_stdout(cmd):
+    return json.loads(subprocess.check_output(shlex.split(cmd)).decode())
 
 
 def transform_schema_with_items(schema, items):
