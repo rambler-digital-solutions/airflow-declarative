@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2017, Rambler Digital Solutions
+# Copyright 2019, Rambler Digital Solutions
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ from airflow_declarative.operators import GenericOperator
 
 @pytest.fixture()
 def dag(good_dag_path):
-    path = good_dag_path('template-with-dicts')
+    path = good_dag_path('template-with-from-stdout')
     dags = airflow_declarative.from_path(path)
 
     assert len(dags) == 1
@@ -46,16 +46,4 @@ def test_callback_params(dag):
     foo.execute({})
     assert foo._callback_instance.param == {'hello': ['привет']}
 
-    bar = dag.task_dict['operator_bar']
-    assert isinstance(bar, GenericOperator)
-    bar.execute({})
-    assert bar._callback_instance.param == {'world': ['мир']}
-
-    baz = dag.task_dict['operator_baz']
-    assert isinstance(baz, GenericOperator)
-    baz.execute({})
-    assert baz._callback_instance.param == {'qwerty': ['йцукен']}
-
-    assert set(dag.task_dict) == {
-        'operator_foo', 'operator_bar', 'operator_baz', 'sensor'
-    }
+    assert set(dag.task_dict) == {'operator_foo'}

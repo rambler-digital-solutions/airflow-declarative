@@ -226,7 +226,7 @@ DAG_ARGS = Dict({
     OptionalKey('start_date'): DATE,
 })
 
-WITH_ITEMS = List(ANY) | Dict(using=CALLBACK)
+WITH_ITEMS = List(ANY) | Dict(using=CALLBACK) | Dict(from_stdout=STRING)
 
 DO_TEMPLATE = Dict({
     OptionalKey('operators'): OPERATORS,
