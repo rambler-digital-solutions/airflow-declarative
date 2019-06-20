@@ -25,6 +25,7 @@ from __future__ import (
 import json
 import shlex
 import subprocess
+import sys
 from collections import Iterable, Mapping
 from itertools import chain
 
@@ -150,7 +151,13 @@ def transform_with_items(schema, template):
 
 
 def from_stdout(cmd):
-    return json.loads(subprocess.check_output(shlex.split(cmd)).decode())
+    PY2 = sys.version_info[0] == 2
+    if PY2:
+        cmd = cmd.encode('utf8')
+    output = subprocess.check_output(shlex.split(cmd))
+    if not PY2:
+        output = output.decode('utf8')
+    return json.loads(output)
 
 
 def transform_schema_with_items(schema, items):
