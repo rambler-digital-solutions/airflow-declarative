@@ -21,8 +21,9 @@ airflow-declarative
 Airflow declarative DAGs via YAML.
 
 Compatibility:
+
 - Python 2.7 / 3.5+
-- Airflow 1.8+ (should work with older versions as well, at least down to 1.7)
+- Airflow 1.9+
 
 Key Features
 ============
