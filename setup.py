@@ -101,7 +101,7 @@ setup(
             'flake8==3.5.0',
             'isort==4.3.4',
             'mock==2.0.0',
-            'pylint==2.1.1; python_version>="3"',
+            'pylint==2.3.1; python_version>="3"',
             'pytest-cov==2.6.0',
             'pytest-sugar==0.9.1',
             'pytest==3.8.2',
