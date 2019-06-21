@@ -25,8 +25,14 @@ from __future__ import (
 import inspect
 
 from airflow import operators
-from airflow.operators import sensors
 from airflow.utils.decorators import apply_defaults
+
+
+try:
+    # Since Airflow 1.10
+    from airflow.sensors.base_sensor_operator import BaseSensorOperator
+except ImportError:
+    from airflow.operators.sensors import BaseSensorOperator
 
 
 class CallbackMixIn(object):
@@ -64,7 +70,7 @@ class GenericOperator(operators.BaseOperator, CallbackMixIn):
         return self._call_callback(context)
 
 
-class GenericSensor(sensors.BaseSensorOperator, CallbackMixIn):
+class GenericSensor(BaseSensorOperator, CallbackMixIn):
     """Generic sensor to wrap and call the callback function which implements
     all the logic without being associated with airflow anyhow except by
     context.
