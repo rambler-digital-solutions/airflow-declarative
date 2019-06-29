@@ -59,6 +59,18 @@ class Operator(object):
         pass
 
 
+class MultiParamOperator(object):
+
+    def __init__(self, context, param1=None, param2=None, param3=None):
+        self.context = context
+        self.param1 = param1
+        self.param2 = param2
+        self.param3 = param3
+
+    def __call__(self):
+        pass
+
+
 class Sensor(object):
 
     def __init__(self, context, param):
