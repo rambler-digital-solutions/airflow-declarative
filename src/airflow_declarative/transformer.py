@@ -88,10 +88,16 @@ class YamlExtension(Extension):
                     # don't yaml twice
                     continue
 
-                var_expr.append(Token(10, 'pipe', u'|'))
-                var_expr.append(Token(10, 'name', u'yaml'))
+                # Wrap the whole expression between the `variable_begin`
+                # and `variable_end` marks in parens:
+                var_expr.insert(1, Token(var_expr[0].lineno, 'lparen', None))
+                var_expr.append(Token(var_expr[-1].lineno, 'rparen', None))
+
+                var_expr.append(Token(token.lineno, 'pipe', '|'))
+                var_expr.append(Token(token.lineno, 'name', 'yaml'))
 
                 var_expr.append(variable_end)
+
                 for token in var_expr:
                     yield token
             else:
