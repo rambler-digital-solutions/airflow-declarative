@@ -197,7 +197,7 @@ def cast_interval(value):
 def cast_crontab_or_interval(value):
     try:
         return cast_interval(value)
-    except ValueError:
+    except t.DataError:
         if not isinstance(value, str):
             raise
         # This is definitely not a valid time interval.
@@ -206,7 +206,9 @@ def cast_crontab_or_interval(value):
             # Airflow uses `croniter` as well.
             croniter(value)
         except ValueError as e:
-            raise t.DataError("Invalid crontab expression: %s" % str(e))
+            raise t.DataError(
+                "Invalid timedelta or crontab expression: %s" % str(e)
+            )
         else:
             return value
 
