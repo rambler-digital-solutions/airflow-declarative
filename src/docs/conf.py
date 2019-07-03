@@ -29,6 +29,8 @@
 #
 import os
 import subprocess
+
+
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
@@ -38,7 +40,7 @@ import subprocess
 def get_metadata_value(property_name):
     # Requires python >=3.5
 
-    setup_py_dir = os.path.join(os.path.dirname(__file__), '..')
+    setup_py_dir = os.path.join(os.path.dirname(__file__), '..', '..')
     setup_py_file = os.path.join(setup_py_dir, 'setup.py')
 
     out = subprocess.run(
@@ -164,7 +166,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'airflow-declarative.tex', 'airflow-declarative Documentation',
+    (master_doc, 'airflow-declarative.tex',
+     'airflow-declarative Documentation',
      'Usermodel Team @ Rambler Digital Solutions', 'manual'),
 ]
 
