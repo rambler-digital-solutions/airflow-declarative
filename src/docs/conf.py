@@ -56,7 +56,7 @@ def get_metadata_value(property_name):
 project = get_metadata_value('name')
 author = get_metadata_value('author')
 
-_copyright_year = 2018
+_copyright_year = 2019
 copyright = '%s, %s' % (_copyright_year, author)
 
 # The full version, including alpha/beta/rc tags
@@ -76,6 +76,7 @@ version = release.rsplit('.', 1)[0]  # `1.0.16+g40b2401` -> `1.0`
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
+    'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
 ]
 
@@ -213,3 +214,8 @@ epub_exclude_files = ['search.html']
 
 
 # -- Extension configuration -------------------------------------------------
+
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/', None),
+    'airflow': ('https://airflow.apache.org/', None),
+}

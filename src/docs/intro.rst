@@ -1,5 +1,5 @@
 ..
-.. Copyright 2017, Rambler Digital Solutions
+.. Copyright 2019, Rambler Digital Solutions
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -15,11 +15,18 @@
 ..
 
 
-Good DAGs
-=========
+Introduction
+============
 
-These yamls are the examples of well-formed declarative dags.
+The primary way of constructing DAGs in Airflow is by describing them
+in Python: `<https://airflow.apache.org/tutorial.html>`_.
 
-They may not work in your environment as-is (e.g. because some Python
-packages are missing), but they are the valid ones, so feel free to
-use them for inspiration.
+`airflow_declarative` transforms the DAGs defined with YAML to their
+Python equivalents.
+
+The public API is pretty simple: there are just 2 functions, both
+returning the :class:`airflow.models.DAG` instances:
+
+.. autofunction:: airflow_declarative.from_path
+
+.. autofunction:: airflow_declarative.from_dict

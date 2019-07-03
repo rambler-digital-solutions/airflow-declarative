@@ -32,36 +32,38 @@ __all__ = (
 
 
 def from_path(path):
-    """Loads DAGs from a full path to YAML file.
+    """Load DAGs from a YAML file.
 
-    :param str path: YAML file path.
-    :rtype: list[airflow.DAG]
+    :param str path: A path to the declarative YAML file.
+    :rtype: list[airflow.models.DAG]
     """
     return from_dict(schema.from_path(path))
 
 
 def from_dict(schema):
-    """
+    """Load DAGs from a dict (i.e. the parsed YAML file contents).
 
-    :param dict schema:
-    :rtype: list[airflow.DAG]
+    :param dict schema: The declarative YAML schema.
+    :rtype: list[airflow.models.DAG]
     """
     return builder.build_dags(transform(schema))
 
 
 def transform(schema):
-    """Returns back transformed schema suitable to build DAGs with all
-    variables expanded and all templates rendered.
+    """Preprocess the declarative YAML schema:
+    - validate the schema,
+    - expand the `do` block,
+    - expand `defaults`.
 
-    :param dict schema: Airflow YAML schema as a template.
+    :param dict schema: The declarative YAML schema.
     :rtype: dict
     """
     return transformer.transform(schema)
 
 
 def render(path):
-    """Prints out transformed schema. Useful for debug.
+    """Print out the transformed schema. Useful for debugging.
 
-    :param str path: Airflow YAML schema as a template.
+    :param str path: A path to the declarative YAML file.
     """
     print(schema.dump(transformer.transform(schema.from_path(path))))
