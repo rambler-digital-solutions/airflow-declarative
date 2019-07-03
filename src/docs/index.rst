@@ -22,10 +22,29 @@ Welcome to airflow-declarative's documentation!
 :Issue Tracker: https://github.com/rambler-digital-solutions/airflow-declarative/issues
 :PyPI: https://pypi.org/project/airflow-declarative/
 
+
+Airflow Declarative allows to define Airflow DAGs declaratively
+with YAML.
+
+An example of a simple declarative DAG:
+
+.. code-block:: yaml
+
+    dags:
+      my_dag:
+        args:
+          start_date: 2019-07-01
+        operators:
+          my_operator:
+            class: airflow.operators.dummy_operator:DummyOperator
+
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   intro
+   reference
 
 
 Indices and tables
