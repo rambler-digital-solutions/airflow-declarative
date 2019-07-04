@@ -1,6 +1,7 @@
 PROJECT     := airflow_declarative
 PYTHON_VENV := python3
 PYTHON      := python
+SPHINXOPTS  ?= -n -W
 
 .PHONY: venv
 venv:
@@ -20,7 +21,7 @@ develop:
 	SLUGIFY_USES_TEXT_UNIDECODE=yes pip install -e .[develop]
 
 .PHONY: check
-check: check-lint check-coverage
+check: check-lint check-coverage check-docs
 
 
 .PHONY: check-coverage
@@ -31,19 +32,18 @@ check-coverage:
 .PHONY: check-lint
 check-lint: check-imports check-codestyle check-errors
 
-.PHONY: check-imports check-codestyle check-errors
+.PHONY: check-imports check-codestyle check-errors check-docs
 check-imports:
 	@${PYTHON} -m isort.main -df -c -rc setup.py src/ tests/
 check-codestyle:
 	@${PYTHON} -m flake8 --statistics --show-source setup.py src/ tests/
 check-errors:
 	@${PYTHON} -m pylint --rcfile=.pylintrc -E src/$(PROJECT)
+check-docs:
+	@# Doesn't generate any output but prints out errors and warnings.
+	@sphinx-build -M dummy src/docs build/docs $(SPHINXOPTS)
+
 
 .PHONY: docs
 docs:
-	make -C src/docs html
-
-.PHONY: check-docs
-check-docs:
-	# Doesn't generate any output but prints out errors and warnings.
-	make -C src/docs dummy
+	@sphinx-build -M html src/docs build/docs $(SPHINXOPTS)
