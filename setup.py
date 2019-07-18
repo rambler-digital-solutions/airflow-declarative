@@ -103,13 +103,13 @@ setup(
     extras_require={
         'develop': [
             'apache-airflow',
-            'flake8==3.5.0',
-            'isort==4.3.4',
+            'black==19.3b0; python_version>="3.6"',
+            'coverage==4.5.3',
+            'flake8==3.7.8',
+            'isort==4.3.21',
             'mock==2.0.0',
             'pylint==2.3.1; python_version>="3"',
-            'pytest-cov==2.6.0',
-            'pytest-sugar==0.9.1',
-            'pytest==3.8.2',
+            'pytest==5.0.1',
             'sphinx-rtd-theme>=0.4.2',
             'sphinx==1.8.1',
         ],
