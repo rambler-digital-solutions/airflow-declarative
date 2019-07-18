@@ -3,7 +3,8 @@ PN := airflow_declarative
 # PN - Project Version
 PV := `python setup.py -q --version`
 
-PYTHON := python3
+PYTHON_VENV := python3
+PYTHON := python
 SHELL  := /bin/sh
 
 LINT_TARGET := setup.py src/ tests/
@@ -144,7 +145,7 @@ test:
 # `venv` target is intentionally not PHONY.
 # target: venv - Creates virtual environment
 venv:
-	@${PYTHON} -m venv venv
+	@${PYTHON_VENV} -m venv venv
 
 
 .PHONY: version
