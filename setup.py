@@ -102,7 +102,7 @@ setup(
             "isort==4.3.21",
             "mock==2.0.0",
             'pylint==2.3.1; python_version>="3"',
-            "pytest==5.0.1",
+            "pytest==4.6.4",
             "sphinx-rtd-theme>=0.4.2",
             "sphinx==1.8.1",
         ]
