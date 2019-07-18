@@ -26,23 +26,6 @@ ROOT_DIR = os.path.dirname(__file__)
 README_PATH = os.path.join(ROOT_DIR, 'README.rst')
 VERSION_PATH = os.path.join(ROOT_DIR, 'VERSION')
 
-INSTALL_REQUIRES_AIRFLOW = [
-    'apache-airflow',
-]
-
-if os.getenv("READTHEDOCS"):
-    # Read The Docs is having difficulties installing the project
-    # when Airflow is added to the `install_requires` list.
-    #
-    # Actually, the project installation in RTD is optional,
-    # but it must be enabled in order to link the Python code from
-    # the rst files.
-    #
-    # The error (at the moment) is:
-    #   error: tzlocal 2.0.0b2 is installed but tzlocal<2.0.0.0,>=1.5.0.0
-    #   is required by {'pendulum'}
-    INSTALL_REQUIRES_AIRFLOW = []
-
 
 if os.path.exists(VERSION_PATH):
     with open(VERSION_PATH) as verfile:
@@ -105,7 +88,12 @@ setup(
     package_dir={'': 'src'},
     packages=find_packages('src'),
 
-    install_requires=INSTALL_REQUIRES_AIRFLOW + [
+    install_requires=[
+        # `apache-airflow` shouldn't be here, otherwise there might be
+        # a circular dependency: a patched Airflow might depend on
+        # `airflow-declarative`, in which case `airflow-declarative`
+        # cannot depend on Airflow.
+
         'croniter',
         'funcsigs; python_version<"3"',
         'jinja2>=2.8',
@@ -114,6 +102,7 @@ setup(
     ],
     extras_require={
         'develop': [
+            'apache-airflow',
             'flake8==3.5.0',
             'isort==4.3.4',
             'mock==2.0.0',
