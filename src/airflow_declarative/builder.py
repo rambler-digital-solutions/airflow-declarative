@@ -15,18 +15,12 @@
 # limitations under the License.
 #
 
-from __future__ import (
-    absolute_import,
-    division,
-    print_function,
-    unicode_literals,
-)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from .schema import ensure_schema
 
 
-def build_dags(schema,
-               dag_class=None, operator_class=None, sensor_class=None):
+def build_dags(schema, dag_class=None, operator_class=None, sensor_class=None):
     """
     :param dict schema: Airflow declarative DAGs schema.
     :param dag_class: DAG class. When not specified, the ``airflow.models.DAG``
@@ -50,11 +44,16 @@ def build_dags(schema,
     if sensor_class is None:  # pragma: no cover
         from .operators import GenericSensor as sensor_class
 
-    return [build_dag(dag_id, dag_schema,
-                      dag_class=dag_class,
-                      operator_class=operator_class,
-                      sensor_class=sensor_class)
-            for dag_id, dag_schema in schema['dags'].items()]
+    return [
+        build_dag(
+            dag_id,
+            dag_schema,
+            dag_class=dag_class,
+            operator_class=operator_class,
+            sensor_class=sensor_class,
+        )
+        for dag_id, dag_schema in schema["dags"].items()
+    ]
 
 
 def build_dag(dag_id, schema, dag_class, operator_class, sensor_class):
@@ -66,28 +65,31 @@ def build_dag(dag_id, schema, dag_class, operator_class, sensor_class):
     :param type sensor_class: Airflow sensor class.
     :rtype: airflow.models.DAG
     """
-    dag = dag_class(dag_id=dag_id, **schema.get('args', {}))
+    dag = dag_class(dag_id=dag_id, **schema.get("args", {}))
 
     sensors = {
-        sensor_id: build_sensor(dag, sensor_id, sensor_schema,
-                                sensor_class=sensor_class)
-        for sensor_id, sensor_schema in schema.get('sensors', {}).items()
+        sensor_id: build_sensor(
+            dag, sensor_id, sensor_schema, sensor_class=sensor_class
+        )
+        for sensor_id, sensor_schema in schema.get("sensors", {}).items()
     }
 
     operators = {
-        operator_id: build_operator(dag, operator_id, operator_schema,
-                                    operator_class=operator_class)
-        for operator_id, operator_schema in schema.get('operators', {}).items()
+        operator_id: build_operator(
+            dag, operator_id, operator_schema, operator_class=operator_class
+        )
+        for operator_id, operator_schema in schema.get("operators", {}).items()
     }
 
     duplicates = set(sensors) & set(operators)
     if duplicates:
-        raise RuntimeError('Tasks: %s - are both sensors and operators'
-                           '' % ', '.join(duplicates))
+        raise RuntimeError(
+            "Tasks: %s - are both sensors and operators" % ", ".join(duplicates)
+        )
 
-    build_flow(dict(operators, **sensors), schema.get('flow', {}))
+    build_flow(dict(operators, **sensors), schema.get("flow", {}))
 
-    if hasattr(dag, 'test_cycle'):
+    if hasattr(dag, "test_cycle"):
         # Since Airflow 1.10
         dag.test_cycle()
 
@@ -102,8 +104,7 @@ def build_sensor(dag, sensor_id, sensor_schema, sensor_class):
     :param type sensor_class: Airflow sensor class.
     :rtype: airflow.operators.sensors.BaseSensorOperator
     """
-    return build_task(dag, sensor_id, sensor_schema,
-                      task_class=sensor_class)
+    return build_task(dag, sensor_id, sensor_schema, task_class=sensor_class)
 
 
 def build_operator(dag, operator_id, operator_schema, operator_class):
@@ -114,8 +115,7 @@ def build_operator(dag, operator_id, operator_schema, operator_class):
     :param type operator_class: Airflow operator class.
     :rtype: airflow.operators.BaseOperator
     """
-    return build_task(dag, operator_id, operator_schema,
-                      task_class=operator_class)
+    return build_task(dag, operator_id, operator_schema, task_class=operator_class)
 
 
 def build_task(dag, task_id, schema, task_class):
@@ -126,22 +126,28 @@ def build_task(dag, task_id, schema, task_class):
     :param type task_class: Airflow operator class.
     :rtype: airflow.operators.BaseOperator
     """
-    args = schema.get('args', {})
+    args = schema.get("args", {})
 
-    callback = schema.get('callback', None)
+    callback = schema.get("callback", None)
     if callback is not None:
-        callback_args = schema.get('callback_args', {})
-        return task_class(_callback=callback, _callback_args=callback_args,
-                          task_id=task_id, dag=dag, **args)
+        callback_args = schema.get("callback_args", {})
+        return task_class(
+            _callback=callback,
+            _callback_args=callback_args,
+            task_id=task_id,
+            dag=dag,
+            **args
+        )
 
-    task_class = schema.get('class', None)  # type: type
+    task_class = schema.get("class", None)  # type: type
     if task_class is not None:
         return task_class(task_id=task_id, dag=dag, **args)
 
     # Basically, you cannot reach here - schema validation should prevent this.
     # But in case if you're lucky here is your exception.
-    raise RuntimeError('nothing to do with %s: %s'
-                       '' % (task_id, schema))  # pragma: no cover
+    raise RuntimeError(
+        "nothing to do with %s: %s" % (task_id, schema)
+    )  # pragma: no cover
 
 
 def build_flow(tasks, schema):
@@ -153,13 +159,15 @@ def build_flow(tasks, schema):
         try:
             task = tasks[task_id]
         except KeyError:
-            raise RuntimeError('unknown task `%s` in flow' % task_id)
+            raise RuntimeError("unknown task `%s` in flow" % task_id)
         else:
             downstream_tasks = []
             for downstream_idx in downstream_ids:
                 try:
                     downstream_tasks.append(tasks[downstream_idx])
                 except KeyError:
-                    raise RuntimeError('unknown downstream task `%s` for %s'
-                                       '' % (downstream_idx, task_id))
+                    raise RuntimeError(
+                        "unknown downstream task `%s` for %s"
+                        "" % (downstream_idx, task_id)
+                    )
             task.set_downstream(downstream_tasks)

@@ -15,12 +15,7 @@
 # limitations under the License.
 #
 
-from __future__ import (
-    absolute_import,
-    division,
-    print_function,
-    unicode_literals,
-)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import logging
 import os
@@ -31,19 +26,15 @@ from .utils import examples_path
 
 
 # https://github.com/eisensheng/pytest-catchlog/issues/59
-logger = logging.getLogger('flake8')
+logger = logging.getLogger("flake8")
 logger.propagate = False
 
 
 @pytest.fixture()
 def example_path():
-    return lambda kind, name: os.path.join(
-        examples_path(),
-        kind,
-        name + '.yaml'
-    )
+    return lambda kind, name: os.path.join(examples_path(), kind, name + ".yaml")
 
 
 @pytest.fixture()
 def good_dag_path(example_path):
-    return lambda name: example_path('good', name)
+    return lambda name: example_path("good", name)

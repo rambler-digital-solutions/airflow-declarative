@@ -15,20 +15,12 @@
 # limitations under the License.
 #
 
-from __future__ import (
-    absolute_import,
-    division,
-    print_function,
-    unicode_literals,
-)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from . import builder, schema, transformer
 
 
-__all__ = (
-    'from_path',
-    'from_dict',
-)
+__all__ = ("from_path", "from_dict")
 
 
 def from_path(path):

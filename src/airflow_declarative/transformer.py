@@ -15,12 +15,7 @@
 # limitations under the License.
 #
 
-from __future__ import (
-    absolute_import,
-    division,
-    print_function,
-    unicode_literals,
-)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import json
 import shlex
@@ -48,16 +43,16 @@ def yaml_filter(obj):
     if isinstance(obj, str_types):
         return obj
     elif isinstance(obj, jinja2.Undefined):
-        return ''
+        return ""
     else:
         try:
             return dump(obj)
         except Exception as exc:
             raise RuntimeError(
-                'Unable to serialize {!r} to YAML because {}.'
-                'Template render must produce valid YAML file, so please use'
-                ' simple types in `with_items` block.'
-                ''.format(obj, exc)
+                "Unable to serialize {!r} to YAML because {}."
+                "Template render must produce valid YAML file, so please use"
+                " simple types in `with_items` block."
+                "".format(obj, exc)
             )
 
 
@@ -76,25 +71,25 @@ class YamlExtension(Extension):
         """
         while not stream.eos:
             token = next(stream)
-            if token.test('variable_begin'):
+            if token.test("variable_begin"):
                 var_expr = []
-                while not token.test('variable_end'):
+                while not token.test("variable_end"):
                     var_expr.append(token)
                     token = next(stream)
                 variable_end = token
 
                 last_token = var_expr[-1]
-                if last_token.test('name') and last_token.value == 'yaml':
+                if last_token.test("name") and last_token.value == "yaml":
                     # don't yaml twice
                     continue
 
                 # Wrap the whole expression between the `variable_begin`
                 # and `variable_end` marks in parens:
-                var_expr.insert(1, Token(var_expr[0].lineno, 'lparen', None))
-                var_expr.append(Token(var_expr[-1].lineno, 'rparen', None))
+                var_expr.insert(1, Token(var_expr[0].lineno, "lparen", None))
+                var_expr.append(Token(var_expr[-1].lineno, "rparen", None))
 
-                var_expr.append(Token(token.lineno, 'pipe', '|'))
-                var_expr.append(Token(token.lineno, 'name', 'yaml'))
+                var_expr.append(Token(token.lineno, "pipe", "|"))
+                var_expr.append(Token(token.lineno, "name", "yaml"))
 
                 var_expr.append(variable_end)
 
@@ -105,7 +100,7 @@ class YamlExtension(Extension):
 
 
 ENV = jinja2.Environment()
-ENV.filters['yaml'] = yaml_filter
+ENV.filters["yaml"] = yaml_filter
 ENV.add_extension(YamlExtension)
 
 
@@ -117,40 +112,37 @@ def transform(schema):
 
 
 def transform_templates(schema):
-    for dag_id, dag_schema in schema['dags'].items():
-        if 'do' not in dag_schema:
+    for dag_id, dag_schema in schema["dags"].items():
+        if "do" not in dag_schema:
             continue
-        templates = dag_schema.pop('do')
+        templates = dag_schema.pop("do")
         for template in templates:
             transform_strategy(dag_schema, template)
     return schema
 
 
 def transform_strategy(schema, template):
-    if 'with_items' in template:
+    if "with_items" in template:
         return transform_with_items(schema, template)
     else:
-        raise RuntimeError('cannot figure how to apply template: {}'
-                           ''.format(template))
+        raise RuntimeError("cannot figure how to apply template: {}".format(template))
 
 
 def transform_with_items(schema, template):
-    items = template['with_items']
+    items = template["with_items"]
     if isinstance(items, dict):
-        if set(items) == {'using'}:
-            items = items['using']
-        elif set(items) == {'from_stdout'}:
-            items = from_stdout(items['from_stdout'])
-    if hasattr(items, '__call__'):
+        if set(items) == {"using"}:
+            items = items["using"]
+        elif set(items) == {"from_stdout"}:
+            items = from_stdout(items["from_stdout"])
+    if hasattr(items, "__call__"):
         items = items()
     if not isinstance(items, Iterable):
-        raise RuntimeError('bad with_items template: {}'.format(items))
-    for key in {'operators', 'sensors', 'flow'}:
+        raise RuntimeError("bad with_items template: {}".format(items))
+    for key in {"operators", "sensors", "flow"}:
         if key not in template:
             continue
-        subschema = reduce(merge,
-                           transform_schema_with_items(template[key], items),
-                           {})
+        subschema = reduce(merge, transform_schema_with_items(template[key], items), {})
         schema.setdefault(key, {})
         schema[key] = merge(schema[key], subschema)
     return schema
@@ -159,10 +151,10 @@ def transform_with_items(schema, template):
 def from_stdout(cmd):
     PY2 = sys.version_info[0] == 2
     if PY2:
-        cmd = cmd.encode('utf8')
+        cmd = cmd.encode("utf8")
     output = subprocess.check_output(shlex.split(cmd))
     if not PY2:
-        output = output.decode('utf8')
+        output = output.decode("utf8")
     return json.loads(output)
 
 
@@ -228,11 +220,11 @@ def merge_iterable(base, other):
 
 
 def transform_defaults(schema):
-    for dag_id, dag_schema in schema['dags'].items():
-        defaults = dag_schema.pop('defaults', {})
+    for dag_id, dag_schema in schema["dags"].items():
+        defaults = dag_schema.pop("defaults", {})
         if not defaults:
             continue
-        for key in {'sensors', 'operators'}:
+        for key in {"sensors", "operators"}:
             if key in dag_schema and key in defaults:
                 transform_apply_tasks_defaults(dag_schema[key], defaults[key])
     return schema
