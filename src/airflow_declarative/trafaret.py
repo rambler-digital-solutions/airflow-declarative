@@ -142,7 +142,7 @@ class Callback(Importable):
 
 
 def cast_interval(value):
-    """Casts interval value into `datetime.timedelta` instance.
+    r"""Casts interval value into `datetime.timedelta` instance.
 
     If value is `int`, returned `timedelta` get constructed from a given
     by the value`s seconds.
