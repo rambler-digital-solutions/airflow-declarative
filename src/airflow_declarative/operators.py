@@ -15,12 +15,7 @@
 # limitations under the License.
 #
 
-from __future__ import (
-    absolute_import,
-    division,
-    print_function,
-    unicode_literals,
-)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import inspect
 
@@ -84,7 +79,9 @@ class GenericSensor(BaseSensorOperator, CallbackMixIn):
     def poke(self, context):
         rval = self._call_callback(context)
         if rval is None:
-            raise RuntimeError('Sensor call returned None. It seems like'
-                               ' a mistake as it may never complete.'
-                               ' Return boolean back please.')
+            raise RuntimeError(
+                "Sensor call returned None. It seems like"
+                " a mistake as it may never complete."
+                " Return boolean back please."
+            )
         return bool(rval)

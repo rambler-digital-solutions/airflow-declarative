@@ -23,32 +23,31 @@ from setuptools.command.sdist import sdist as sdist_orig
 
 
 ROOT_DIR = os.path.dirname(__file__)
-README_PATH = os.path.join(ROOT_DIR, 'README.rst')
-VERSION_PATH = os.path.join(ROOT_DIR, 'VERSION')
+README_PATH = os.path.join(ROOT_DIR, "README.rst")
+VERSION_PATH = os.path.join(ROOT_DIR, "VERSION")
 
 
 if os.path.exists(VERSION_PATH):
     with open(VERSION_PATH) as verfile:
         __version__ = verfile.read().strip()
 else:
-    __version__ = os.popen('git describe --tags --always').read().strip()
+    __version__ = os.popen("git describe --tags --always").read().strip()
     try:
-        base, distance, commit_hash = __version__.split('-')
+        base, distance, commit_hash = __version__.split("-")
     except ValueError:
         # We're on release tag.
         pass
     else:
         # Reformat git describe for PEP-440
-        __version__ = '{}.{}+{}'.format(base, distance, commit_hash)
+        __version__ = "{}.{}+{}".format(base, distance, commit_hash)
 if not __version__:
     # However, things can go wrong, so we'll cry for help here.
-    raise RuntimeError('cannot detect project version')
+    raise RuntimeError("cannot detect project version")
 
 
 class sdist(sdist_orig):
-
     def run(self):
-        with open(VERSION_PATH, 'w') as fobj:
+        with open(VERSION_PATH, "w") as fobj:
             fobj.write(__version__)
         sdist_orig.run(self)
 
@@ -58,64 +57,55 @@ with open(README_PATH) as f:
 
 
 setup(
-    name='airflow-declarative',
+    name="airflow-declarative",
     version=__version__,
-    description='Airflow DAGs done declaratively',
+    description="Airflow DAGs done declaratively",
     long_description=long_story,
-    license='Apache 2.0',
-
-    author='Usermodel Team @ Rambler Digital Solutions',
-    author_email='um@rambler-co.ru',
-    maintainer='Alexander Shorin',
-    maintainer_email='kxepal@gmail.com',
-
-    url='https://github.com/rambler-digital-solutions/airflow-declarative',
-
+    license="Apache 2.0",
+    author="Usermodel Team @ Rambler Digital Solutions",
+    author_email="um@rambler-co.ru",
+    maintainer="Alexander Shorin",
+    maintainer_email="kxepal@gmail.com",
+    url="https://github.com/rambler-digital-solutions/airflow-declarative",
     classifiers=[
-        'Development Status :: 4 - Beta',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache Software License',
-        'Operating System :: MacOS :: MacOS X',
-        'Operating System :: Microsoft :: Windows',
-        'Operating System :: POSIX',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python',
-        'Topic :: Software Development :: Libraries',
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: Apache Software License",
+        "Operating System :: MacOS :: MacOS X",
+        "Operating System :: Microsoft :: Windows",
+        "Operating System :: POSIX",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python",
+        "Topic :: Software Development :: Libraries",
     ],
-
-    package_dir={'': 'src'},
-    packages=find_packages('src'),
-
+    package_dir={"": "src"},
+    packages=find_packages("src"),
     install_requires=[
         # `apache-airflow` shouldn't be here, otherwise there might be
         # a circular dependency: a patched Airflow might depend on
         # `airflow-declarative`, in which case `airflow-declarative`
         # cannot depend on Airflow.
-
-        'croniter',
+        "croniter",
         'funcsigs; python_version<"3"',
-        'jinja2>=2.8',
-        'trafaret-config==1.0.1',
-        'trafaret<2,>=1.0',
+        "jinja2>=2.8",
+        "trafaret-config==1.0.1",
+        "trafaret<2,>=1.0",
     ],
     extras_require={
-        'develop': [
-            'apache-airflow',
+        "develop": [
+            "apache-airflow",
             'black==19.3b0; python_version>="3.6"',
-            'coverage==4.5.3',
-            'flake8==3.7.8',
-            'isort==4.3.21',
-            'mock==2.0.0',
+            "coverage==4.5.3",
+            "flake8==3.7.8",
+            "isort==4.3.21",
+            "mock==2.0.0",
             'pylint==2.3.1; python_version>="3"',
-            'pytest==5.0.1',
-            'sphinx-rtd-theme>=0.4.2',
-            'sphinx==1.8.1',
-        ],
+            "pytest==5.0.1",
+            "sphinx-rtd-theme>=0.4.2",
+            "sphinx==1.8.1",
+        ]
     },
-
-    cmdclass={
-        'sdist': sdist
-    },
+    cmdclass={"sdist": sdist},
 )

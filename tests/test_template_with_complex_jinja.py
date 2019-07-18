@@ -15,12 +15,7 @@
 # limitations under the License.
 #
 
-from __future__ import (
-    absolute_import,
-    division,
-    print_function,
-    unicode_literals,
-)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import pytest
 
@@ -29,7 +24,7 @@ import airflow_declarative
 
 @pytest.fixture()
 def dag(good_dag_path):
-    path = good_dag_path('template-with-complex-jinja')
+    path = good_dag_path("template-with-complex-jinja")
     dags = airflow_declarative.from_path(path)
 
     assert len(dags) == 1
@@ -40,8 +35,8 @@ def dag(good_dag_path):
 
 
 def test_callback_params(dag):
-    operator = dag.task_dict['operator_2']
+    operator = dag.task_dict["operator_2"]
     operator.execute({})
     assert operator._callback_instance.param1 == 7
     assert operator._callback_instance.param2 == 9
-    assert operator._callback_instance.param3 == {'a': 7}
+    assert operator._callback_instance.param3 == {"a": 7}

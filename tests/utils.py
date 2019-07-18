@@ -19,9 +19,7 @@ import os
 
 
 def examples_path():
-    return os.path.abspath(
-        os.path.join(os.path.dirname(__file__), 'dags')
-    )
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), "dags"))
 
 
 def list_examples(kind):
@@ -29,7 +27,7 @@ def list_examples(kind):
     return [
         os.path.join(root, item)
         for item in os.listdir(root)
-        if item.endswith(('.yaml', '.yml'))
+        if item.endswith((".yaml", ".yml"))
     ]
 
 
@@ -50,7 +48,6 @@ def gen_items():
 
 
 class Operator(object):
-
     def __init__(self, context, param):
         self.context = context
         self.param = param
@@ -60,7 +57,6 @@ class Operator(object):
 
 
 class MultiParamOperator(object):
-
     def __init__(self, context, param1=None, param2=None, param3=None):
         self.context = context
         self.param1 = param1
@@ -72,7 +68,6 @@ class MultiParamOperator(object):
 
 
 class Sensor(object):
-
     def __init__(self, context, param):
         self.context = context
         self.param = param

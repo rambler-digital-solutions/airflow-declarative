@@ -15,12 +15,7 @@
 # limitations under the License.
 #
 
-from __future__ import (
-    absolute_import,
-    division,
-    print_function,
-    unicode_literals,
-)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import inspect
 import itertools
@@ -33,7 +28,9 @@ import trafaret_config
 import airflow_declarative
 
 
-text_type = type(u'')  # six.text_type
+# fmt: off
+text_type = type(u"")  # six.text_type
+# fmt: on
 
 
 def param_id(param):
@@ -46,9 +43,7 @@ def param_id(param):
 
 
 def examples_path():
-    return os.path.abspath(
-        os.path.join(os.path.dirname(__file__), 'dags')
-    )
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), "dags"))
 
 
 def list_examples(kind):
@@ -56,20 +51,28 @@ def list_examples(kind):
     return [
         os.path.join(root, item)
         for item in os.listdir(root)
-        if item.endswith(('.yaml', '.yml'))
+        if item.endswith((".yaml", ".yml"))
     ]
 
 
 def pytest_generate_tests(metafunc):
-    parameters = itertools.chain.from_iterable([
-        zip(list_examples('schema-errors'),
-            itertools.repeat(trafaret_config.ConfigError)),
-        zip(list_examples('logic-errors'),
-            itertools.repeat((RuntimeError, TypeError))),
-        zip(list_examples('airflow-errors'),
-            itertools.repeat(airflow.exceptions.AirflowException)),
-    ])
-    metafunc.parametrize('path, expected_exception', parameters, ids=param_id)
+    parameters = itertools.chain.from_iterable(
+        [
+            zip(
+                list_examples("schema-errors"),
+                itertools.repeat(trafaret_config.ConfigError),
+            ),
+            zip(
+                list_examples("logic-errors"),
+                itertools.repeat((RuntimeError, TypeError)),
+            ),
+            zip(
+                list_examples("airflow-errors"),
+                itertools.repeat(airflow.exceptions.AirflowException),
+            ),
+        ]
+    )
+    metafunc.parametrize("path, expected_exception", parameters, ids=param_id)
 
 
 def test_bad_dags(path, expected_exception):

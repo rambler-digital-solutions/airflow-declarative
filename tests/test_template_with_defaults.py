@@ -15,12 +15,7 @@
 # limitations under the License.
 #
 
-from __future__ import (
-    absolute_import,
-    division,
-    print_function,
-    unicode_literals,
-)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import pytest
 
@@ -29,7 +24,7 @@ import airflow_declarative
 
 @pytest.fixture()
 def dag(good_dag_path):
-    path = good_dag_path('template-defaults')
+    path = good_dag_path("template-defaults")
     dags = airflow_declarative.from_path(path)
 
     assert len(dags) == 1
@@ -40,11 +35,11 @@ def dag(good_dag_path):
 
 
 def test_callback_params(dag):
-    operator0 = dag.task_dict['operator_0']
-    assert operator0.queue == 'operators'
+    operator0 = dag.task_dict["operator_0"]
+    assert operator0.queue == "operators"
 
-    operator1 = dag.task_dict['operator_1']
-    assert operator1.queue == 'special'
+    operator1 = dag.task_dict["operator_1"]
+    assert operator1.queue == "special"
 
-    sensor = dag.task_dict['sensor']
-    assert sensor.queue == 'sensors'
+    sensor = dag.task_dict["sensor"]
+    assert sensor.queue == "sensors"

@@ -15,12 +15,7 @@
 # limitations under the License.
 #
 
-from __future__ import (
-    absolute_import,
-    division,
-    print_function,
-    unicode_literals,
-)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import mock
 import pytest
@@ -31,7 +26,7 @@ from airflow_declarative.operators import GenericOperator, GenericSensor
 
 @pytest.fixture()
 def dag(good_dag_path):
-    path = good_dag_path('callback-tasks')
+    path = good_dag_path("callback-tasks")
     dags = airflow_declarative.from_path(path)
 
     assert len(dags) == 1
@@ -42,36 +37,35 @@ def dag(good_dag_path):
 
 
 def test_callbacks(dag):
-    sensor_class = dag.task_dict['sensor_class']
+    sensor_class = dag.task_dict["sensor_class"]
     assert isinstance(sensor_class, GenericSensor)
     assert sensor_class.poke({}) is True
-    assert sensor_class._callback_instance.param == 'something'
+    assert sensor_class._callback_instance.param == "something"
 
-    sensor_func = dag.task_dict['sensor_func']
+    sensor_func = dag.task_dict["sensor_func"]
     assert isinstance(sensor_func, GenericSensor)
     assert sensor_func.poke({}) is True
     assert sensor_func.poke_interval == 10.0
 
-    worker = dag.task_dict['worker']
+    worker = dag.task_dict["worker"]
     assert isinstance(worker, GenericOperator)
     assert worker.execute({}) is None
 
 
 def test_sensor_returns_none(dag):
-    sensor = dag.task_dict['sensor_func']
+    sensor = dag.task_dict["sensor_func"]
     assert isinstance(sensor, GenericSensor)
 
-    with mock.patch.object(sensor, '_callback', lambda ctx: None):
+    with mock.patch.object(sensor, "_callback", lambda ctx: None):
         with pytest.raises(RuntimeError):
             assert sensor.poke({}) is not None
 
 
 def test_class_tasks_calls_multiple_times(dag):
-    sensor = dag.task_dict['sensor_class']
+    sensor = dag.task_dict["sensor_class"]
     assert isinstance(sensor, GenericSensor)
 
-    with mock.patch.object(sensor._callback, '__call__',
-                           return_value=True) as patch:
+    with mock.patch.object(sensor._callback, "__call__", return_value=True) as patch:
         sensor.poke({})
         sensor.poke({})
         assert patch.call_count == 2
