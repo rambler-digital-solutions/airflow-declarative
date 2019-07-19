@@ -44,6 +44,7 @@ An example of a simple declarative DAG:
    :caption: Contents:
 
    intro
+   installation
    reference
    testing
 

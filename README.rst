@@ -53,11 +53,17 @@ what had gone wrong and why and where.
 Usage
 =====
 
+We provide support for two installation options:
+
+1. As a complementary side package for the upstream Airflow.
+2. As a built-in Airflow functionality using patches for Airflow.
+
 Upstream Airflow
 ----------------
 
-To use with current (up to 1.8.2 release) upstream Airflow, you need to provide
-DAGs via Python file anyway. That should looks something like this:
+The idea is to put a Python script to the ``dags_folder`` which would
+load the declarative dags via airflow_declarative. More details:
+`Installation using Upstream Airflow`_.
 
 .. code-block:: python
 
@@ -66,24 +72,25 @@ DAGs via Python file anyway. That should looks something like this:
     import airflow_declarative
 
     # Assuming that the yaml dags are located in the same directory
-    # as this Python dag module:
-    ROOT = os.path.dirname(__file__)
+    # as this Python module:
+    root = os.path.dirname(__file__)
 
-    DAGS = [
-        airflow_declarative.from_path(os.path.join(ROOT, item))
-        for item in os.listdir(ROOT)
+    dags_list = [
+        airflow_declarative.from_path(os.path.join(root, item))
+        for item in os.listdir(root)
         if item.endswith((".yml", ".yaml"))
     ]
 
-    globals().update({dag.dag_id: dag for dags in DAGS for dag in dags})
+    globals().update({dag.dag_id: dag for dags in dags_list for dag in dags})
 
-And place such file to ``AIRFLOW_HOME`` directory. Airflow will load dags in
-old fashion way.
 
 Patched Airflow
 ---------------
 
-Checkout `patches` directory for patches against Airflow release to have native
-declarative dags support on it. In this case no Python files are need on
-``AIRFLOW_HOME`` path - just put there your YAMLs, they'll get loaded
-automagically.
+We provide ready to use patches in the `patches`_ directory. To use them
+you will need to apply a patch to a corresponding Airflow version and then
+build it yourself. More details: `Installation using Patched Airflow`_.
+
+.. _Installation using Upstream Airflow: https://airflow-declarative.readthedocs.io/en/latest/installation.html#upstream-airflow
+.. _Installation using Patched Airflow: https://airflow-declarative.readthedocs.io/en/latest/installation.html#patched-airflow
+.. _patches: https://github.com/rambler-digital-solutions/airflow-declarative/blob/master/patches
