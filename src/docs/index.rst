@@ -45,6 +45,7 @@ An example of a simple declarative DAG:
 
    intro
    reference
+   testing
 
 
 Indices and tables

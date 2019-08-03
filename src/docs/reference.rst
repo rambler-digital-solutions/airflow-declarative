@@ -114,6 +114,9 @@ DAG_ARGS
 The actual meaning of these args can be found in the :class:`airflow.models.DAG`
 doc page.
 
+
+.. _operator_sensor:
+
 OPERATOR / SENSOR
 -----------------
 
@@ -187,6 +190,8 @@ the args more granularly: only to ``sensors`` or only to ``operators``
 (note that defaults specified in ``operators`` would not be applied
 to sensors).
 
+
+.. _flow:
 
 FLOW
 ----
