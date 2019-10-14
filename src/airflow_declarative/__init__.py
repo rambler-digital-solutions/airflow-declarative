@@ -54,8 +54,9 @@ def transform(schema):
 
 
 def render(path):
-    """Print out the transformed schema. Useful for debugging.
+    """Return the transformed schema in yaml format. Useful for debugging.
 
     :param str path: A path to the declarative YAML file.
+    :rtype: str
     """
-    print(schema.dump(transformer.transform(schema.from_path(path))))
+    return schema.dump(transform(schema.from_path(path)))
