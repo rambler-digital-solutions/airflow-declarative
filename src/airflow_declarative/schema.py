@@ -77,7 +77,10 @@ def dump(schema, *args, **kwargs):
     """
     kwargs.setdefault("default_flow_style", False)
     kwargs.setdefault("default_style", "")
-    return yaml.dump(schema, Dumper=Dumper, *args, **kwargs)
+
+    # yaml.dump always end the string with '\n...\n' even if explicit_end is False
+    # so just replace it
+    return yaml.dump(schema, Dumper=Dumper, *args, **kwargs).replace("\n...\n", "")
 
 
 class Dumper(yaml.SafeDumper):
