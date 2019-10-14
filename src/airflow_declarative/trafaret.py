@@ -24,7 +24,7 @@ import re
 
 import trafaret as t
 from croniter import croniter
-from trafaret import Any, Bool, Dict, Email, Enum, Int, Key, List, Mapping, String
+from trafaret import Any, Bool, Dict, Email, Enum, Int, Key, List, Mapping, Null, String
 
 
 try:
@@ -46,6 +46,7 @@ __all__ = (
     "Key",
     "List",
     "Mapping",
+    "Null",
     "OptionalKey",
     "String",
     "TimeDelta",

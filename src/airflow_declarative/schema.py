@@ -36,6 +36,7 @@ from .trafaret import (
     Key,
     List,
     Mapping,
+    Null,
     OptionalKey,
     String,
     TimeDelta,
@@ -120,10 +121,12 @@ CALLBACK = Callback()
 CLASS = Class()
 DATE = Date()
 EMAIL = Email
+NULL = Null()
 POSITIVE_INT = Int(gte=0)
 STRING = String()
 TIMEDELTA = TimeDelta()
 
+CRON_PRESETS = Enum("@once", "@hourly", "@daily", "@weekly", "@monthly", "@yearly")
 CRONTAB_OR_INTERVAL = (TIMEDELTA | STRING | POSITIVE_INT) >> cast_crontab_or_interval
 INTERVAL = (TIMEDELTA | STRING | POSITIVE_INT) >> cast_interval
 INTERVAL_INT_SECONDS = (TIMEDELTA | STRING | POSITIVE_INT) >> (
@@ -223,7 +226,7 @@ DAG_ARGS = Dict(
         OptionalKey("end_date"): DATE,
         OptionalKey("max_active_runs"): POSITIVE_INT,
         OptionalKey("orientation"): STRING,
-        OptionalKey("schedule_interval"): CRONTAB_OR_INTERVAL,
+        OptionalKey("schedule_interval"): NULL | CRON_PRESETS | CRONTAB_OR_INTERVAL,
         OptionalKey("sla_miss_callback"): CALLBACK,
         OptionalKey("start_date"): DATE,
     }
