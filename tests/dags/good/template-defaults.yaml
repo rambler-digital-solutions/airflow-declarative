@@ -21,6 +21,7 @@ dags:
       schedule_interval: 1d
     defaults:
       operators:
+        callback: tests.utils:operator
         args:
           queue: operators
       sensors:
@@ -28,9 +29,10 @@ dags:
           queue: sensors
     operators:
       operator_0:
-        callback: tests.utils:operator
+        callback: tests.utils:Operator
+        callback_args:
+          param: 1
       operator_1:
-        callback: tests.utils:operator
         args:
           queue: special
     sensors:
