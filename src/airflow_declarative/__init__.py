@@ -20,7 +20,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from . import builder, schema, transformer
 
 
-__all__ = ("from_path", "from_dict")
+__all__ = ("from_path", "from_dict", "render")
 
 
 def from_path(path):
