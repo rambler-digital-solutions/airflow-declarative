@@ -245,16 +245,7 @@ DO_TEMPLATE = Dict(
 
 DO_TEMPLATES = List(DO_TEMPLATE)
 
-OPERATOR_DEFAULTS = OPERATOR
-
-SENSOR_DEFAULTS = SENSOR
-
-DEFAULTS = Dict(
-    {
-        OptionalKey("operators"): OPERATOR_DEFAULTS,
-        OptionalKey("sensors"): SENSOR_DEFAULTS,
-    }
-)
+DEFAULTS = Dict({OptionalKey("operators"): OPERATOR, OptionalKey("sensors"): SENSOR})
 
 DAG = Dict(
     {
