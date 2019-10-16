@@ -41,11 +41,15 @@ The anatomy of a declarative DAG:
 
         defaults:
           sensors:
-            # `SENSOR_ARGS`
-            queue: my_sensors_queue
+            # `SENSOR`
+            args:
+              # `SENSOR_ARGS`
+              queue: my_sensors_queue
           operators:
-            # `OPERATOR_ARGS`
-            queue: my_operators_queue
+            # `OPERATOR`
+            args:
+              # `OPERATOR_ARGS`
+              queue: my_operators_queue
 
         args:
           # `DAG_ARGS`
