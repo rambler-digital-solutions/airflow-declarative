@@ -23,4 +23,6 @@ dags:
         class: airflow.operators.dummy_operator:DummyOperator
     sensors:
       task:
-        class: airflow.operators.sensors:BaseSensorOperator
+        class: airflow.sensors.http_sensor:HttpSensor
+        args:
+          endpoint: http://localhost

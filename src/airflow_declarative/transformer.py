@@ -21,7 +21,6 @@ import json
 import shlex
 import subprocess
 import sys
-from collections import Iterable, Mapping
 from itertools import chain
 
 import jinja2
@@ -30,6 +29,7 @@ from jinja2.ext import Extension
 from jinja2.lexer import Token
 from trafaret import str_types
 
+from .compat import Iterable, Mapping
 from .schema import dump, ensure_schema
 
 
