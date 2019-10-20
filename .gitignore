@@ -1,95 +1,73 @@
-# Created by .ignore support plugin (hsz.mobi)
-### Python template
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
 *$py.class
-
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
 *,cover
-.hypothesis/
-
-# Translations
+*.cover
+*.egg
+*.egg-info/
+*.log
+*.manifest
 *.mo
 *.pot
-
-# Django stuff:
-*.log
-local_settings.py
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-_build/
-
-# PyBuilder
-target/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# pyenv
-.python-version
-
-# celery beat schedule file
-celerybeat-schedule
-
-# dotenv
+*.py[cod]
+*.sage.py
+*.so
+*.spec
+.cache
+.coverage
+.coverage.*
+.dmypy.json
+.eggs/
 .env
-
-# virtualenv
-.venv/
-venv/
-ENV/
-
-# Spyder project settings
-.spyderproject
-
-# Rope project settings
+.hypothesis/
+.idea
+.installed.cfg
+.ipynb_checkpoints
+.mypy_cache/
+.nox/
+.pyre/
+.pytest_cache/
+.Python
+.python-version
 .ropeproject
-
-# Project specifics
+.scrapy
+.spyderproject
+.spyproject
+.tox/
+.venv
+.webassets-cache
+/site
+__pycache__/
+_build/
+build/
+celerybeat-schedule
+coverage.xml
+db.sqlite3
+develop-eggs/
+dist/
+dmypy.json
+docs/_build/
+downloads/
+eggs/
+env.bak/
+ENV/
+env/
+htmlcov/
+instance/
+ipython_config.py
+junit.xml
+lib/
+lib64/
+local_settings.py
+MANIFEST
+nosetests.xml
+parts/
+pip-delete-this-directory.txt
+pip-log.txt
+profile_default/
+sdist/
+share/python-wheels/
+target/
+var/
+venv.bak/
+venv/
 VERSION
+wheels/
