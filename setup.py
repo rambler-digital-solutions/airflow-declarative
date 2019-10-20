@@ -17,97 +17,73 @@
 #
 
 import os
+import subprocess
 
-from setuptools import find_packages, setup
+from setuptools import setup
 from setuptools.command.sdist import sdist as sdist_orig
 
 
-ROOT_DIR = os.path.dirname(__file__)
-README_PATH = os.path.join(ROOT_DIR, "README.rst")
-VERSION_PATH = os.path.join(ROOT_DIR, "VERSION")
+ROOT = os.path.dirname(__file__)
+VERSION = os.path.join(ROOT, "VERSION")
 
 
-if os.path.exists(VERSION_PATH):
-    with open(VERSION_PATH) as verfile:
-        __version__ = verfile.read().strip()
-else:
-    __version__ = os.popen("git describe --tags --always").read().strip()
-    try:
-        base, distance, commit_hash = __version__.split("-")
-    except ValueError:
-        # We're on release tag.
-        pass
-    else:
-        # Reformat git describe for PEP-440
-        __version__ = "{}.{}+{}".format(base, distance, commit_hash)
-if not __version__:
-    # However, things can go wrong, so we'll cry for help here.
-    raise RuntimeError("cannot detect project version")
+def main():
+    return setup(
+        # fmt: off
+        cmdclass={
+            "sdist": sdist,
+        },
+        version=project_version(),
+        # fmt: on
+    )
+
+
+def project_version():
+    version = None
+
+    if not version:
+        try:
+            output = (
+                subprocess.check_output(
+                    ["git", "describe", "--tags", "--always"],
+                    stderr=open(os.devnull, "wb"),
+                )
+                .strip()
+                .decode()
+            )
+        except (FileNotFoundError, subprocess.CalledProcessError):
+            # Can't read the tag. That's probably project at initial stage,
+            # or git is not available at all or something else.
+            pass
+        else:
+            try:
+                base, distance, commit_hash = output.split("-")
+            except ValueError:
+                # We're on release tag.
+                version = output
+            else:
+                # Reformat git describe for PEP-440
+                version = "{}.{}+{}".format(base, distance, commit_hash)
+
+    if not version and os.path.exists(VERSION):
+        with open(VERSION) as verfile:
+            version = verfile.read().strip()
+
+    if not version:
+        raise RuntimeError("cannot detect project version")
+
+    return version
 
 
 class sdist(sdist_orig):
     def run(self):
-        with open(VERSION_PATH, "w") as fobj:
-            fobj.write(__version__)
+        # In case when user didn't eventually run `make version` ensure that
+        # VERSION file will be included in source distribution.
+        version = project_version()
+        with open(VERSION, "w") as verfile:
+            verfile.write(version)
         sdist_orig.run(self)
 
 
-with open(README_PATH) as f:
-    long_story = f.read()
-
-
-setup(
-    name="airflow-declarative",
-    version=__version__,
-    description="Airflow DAGs done declaratively",
-    long_description=long_story,
-    license="Apache 2.0",
-    author="Usermodel Team @ Rambler Digital Solutions",
-    author_email="um@rambler-co.ru",
-    maintainer="Alexander Shorin",
-    maintainer_email="kxepal@gmail.com",
-    url="https://github.com/rambler-digital-solutions/airflow-declarative",
-    classifiers=[
-        "Development Status :: 4 - Beta",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: Apache Software License",
-        "Operating System :: MacOS :: MacOS X",
-        "Operating System :: Microsoft :: Windows",
-        "Operating System :: POSIX",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python",
-        "Topic :: Software Development :: Libraries",
-    ],
-    package_dir={"": "src"},
-    packages=find_packages("src"),
-    install_requires=[
-        # `apache-airflow` shouldn't be here, otherwise there might be
-        # a circular dependency: a patched Airflow might depend on
-        # `airflow-declarative`, in which case `airflow-declarative`
-        # cannot depend on Airflow.
-        "croniter",
-        'funcsigs; python_version<"3"',
-        "jinja2>=2.8",
-        "trafaret-config==1.0.1",
-        "trafaret<2,>=1.0",
-    ],
-    extras_require={
-        "develop": [
-            "apache-airflow",
-            'black==19.3b0; python_version>="3.6"',
-            "coverage==4.5.4",
-            "flake8==3.7.8",
-            "isort==4.3.21",
-            "mock==2.0.0",
-            'pylint==2.4.2; python_version>="3"',
-            "pytest==4.6.6",
-            "sphinx-rtd-theme==0.4.3",
-            'sphinx==2.2.0; python_version>="3"',
-        ]
-    },
-    cmdclass={"sdist": sdist},
-)
+if __name__ == "__main__":
+    main()
