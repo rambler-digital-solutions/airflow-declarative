@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+global-exclude *.py[co]
+global-exclude __pycache__
 graft patches
 graft tests
 include LICENSE
