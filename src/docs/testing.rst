@@ -27,8 +27,9 @@ The schema validation could be automated with the following test:
 
     from pathlib import Path
 
+    import airflow_declarative
     import pytest
-    from airflow import DAG, declarative
+    from airflow import DAG
 
 
     DAG_DIR = Path("share") / "airflow"
@@ -36,7 +37,7 @@ The schema validation could be automated with the following test:
 
     @pytest.mark.parametrize("dag_path", DAG_DIR.glob("*.yaml"))
     def test_load_airflow_dags(dag_path):
-        dags = declarative.load_dags_from_file(dag_path)
+        dags = airflow_declarative.from_path(dag_path)
         assert all(isinstance(dag, DAG) for dag in dags)
 
 This test assumes that all of your declarative DAGs are located in
