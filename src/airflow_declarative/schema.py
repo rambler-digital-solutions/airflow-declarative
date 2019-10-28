@@ -24,6 +24,7 @@ import trafaret_config
 import yaml
 
 from .trafaret import (
+    And,
     Any,
     Bool,
     Callback,
@@ -47,24 +48,30 @@ from .trafaret import (
 )
 
 
-def from_path(path):
+def from_path(path, check_imports=True):
     """Loads schema from YAML file.
 
     :param str path: YAML file path.
+    :param bool check_imports: Whether or not check importable objects
     :returns: Airflow DAGs schema.
     :rtype: dict
     """
-    return trafaret_config.read_and_validate(path, SCHEMA)
+    base_schema = SCHEMA if check_imports else SCHEMA_WITHOUT_IMPORTS_CHECK
+
+    return trafaret_config.read_and_validate(path, base_schema)
 
 
-def ensure_schema(schema):
+def ensure_schema(schema, check_imports=True):
     """Ensures that schema is valid.
 
     :param dict schema: Airflow DAGs schema.
+    :param bool check_imports: Whether or not check importable objects
     :returns: Airflow DAGs schema.
     :rtype: dict
     """
-    return SCHEMA.check(schema)
+    base_schema = SCHEMA if check_imports else SCHEMA_WITHOUT_IMPORTS_CHECK
+
+    return base_schema.check(schema)
 
 
 def dump(schema, *args, **kwargs):
@@ -135,129 +142,188 @@ INTERVAL_INT_SECONDS = (TIMEDELTA | STRING | POSITIVE_INT) >> (
 PARAMS = Mapping(STRING, ANY)
 VERSION = Enum(1)
 
-OPERATOR_ARGS = Dict(
-    {
-        OptionalKey("adhoc"): BOOLEAN,
-        OptionalKey("depends_on_past"): BOOLEAN,
-        OptionalKey("email"): EMAIL,
-        OptionalKey("email_on_failure"): BOOLEAN,
-        OptionalKey("email_on_retry"): BOOLEAN,
-        OptionalKey("end_date"): DATE,
-        OptionalKey("execution_timeout"): INTERVAL,
-        OptionalKey("executor_config"): Dict(allow_extra="*"),
-        OptionalKey("max_retry_delay"): POSITIVE_INT,
-        OptionalKey("on_failure_callback"): CALLBACK,
-        OptionalKey("on_retry_callback"): CALLBACK,
-        OptionalKey("on_success_callback"): CALLBACK,
-        OptionalKey("owner"): STRING,
-        OptionalKey("params"): PARAMS,
-        OptionalKey("pool"): STRING,
-        OptionalKey("priority_weight"): POSITIVE_INT,
-        OptionalKey("queue"): STRING,
-        OptionalKey("resources"): Dict(
+
+def operator_args():
+    return Dict(
+        {
+            OptionalKey("adhoc"): BOOLEAN,
+            OptionalKey("depends_on_past"): BOOLEAN,
+            OptionalKey("email"): EMAIL,
+            OptionalKey("email_on_failure"): BOOLEAN,
+            OptionalKey("email_on_retry"): BOOLEAN,
+            OptionalKey("end_date"): DATE,
+            OptionalKey("execution_timeout"): INTERVAL,
+            OptionalKey("executor_config"): Dict(allow_extra="*"),
+            OptionalKey("max_retry_delay"): POSITIVE_INT,
+            OptionalKey("on_failure_callback"): CALLBACK,
+            OptionalKey("on_retry_callback"): CALLBACK,
+            OptionalKey("on_success_callback"): CALLBACK,
+            OptionalKey("owner"): STRING,
+            OptionalKey("params"): PARAMS,
+            OptionalKey("pool"): STRING,
+            OptionalKey("priority_weight"): POSITIVE_INT,
+            OptionalKey("queue"): STRING,
+            OptionalKey("resources"): Dict(
+                {
+                    OptionalKey("cpus"): POSITIVE_INT,
+                    OptionalKey("disk"): POSITIVE_INT,
+                    OptionalKey("gpus"): POSITIVE_INT,
+                    OptionalKey("ram"): POSITIVE_INT,
+                }
+            ),
+            OptionalKey("retries"): POSITIVE_INT,
+            OptionalKey("retry_delay"): INTERVAL,
+            OptionalKey("retry_exponential_backoff"): BOOLEAN,
+            OptionalKey("run_as_user"): STRING,
+            OptionalKey("sla"): INTERVAL,
+            OptionalKey("start_date"): DATE,
+            OptionalKey("task_concurrency"): POSITIVE_INT,
+            OptionalKey("trigger_rule"): STRING,
+            OptionalKey("wait_for_downstream"): BOOLEAN,
+            OptionalKey("weight_rule"): Enum("downstream", "upstream", "absolute"),
+        }
+    )
+
+
+def sensor_args():
+    return operator_args() + Dict(
+        {
+            OptionalKey("poke_interval"): INTERVAL_INT_SECONDS,
+            OptionalKey("soft_fail"): BOOLEAN,
+            OptionalKey("timeout"): POSITIVE_INT,
+        }
+    )
+
+
+def operator(check_imports):
+    class_trafaret = CLASS
+    callback_trafaret = CLASS | CALLBACK
+    checks = And(check_for_class_callback_collisions, ensure_callback_args)
+
+    if not check_imports:
+        class_trafaret |= STRING
+        callback_trafaret |= STRING
+        checks = check_for_class_callback_collisions
+
+    return (
+        Dict(
             {
-                OptionalKey("cpus"): POSITIVE_INT,
-                OptionalKey("disk"): POSITIVE_INT,
-                OptionalKey("gpus"): POSITIVE_INT,
-                OptionalKey("ram"): POSITIVE_INT,
+                OptionalKey("class"): class_trafaret,
+                OptionalKey("callback"): callback_trafaret,
+                OptionalKey("callback_args"): PARAMS,
+                OptionalKey("args"): (operator_args() + Dict()).allow_extra("*"),
             }
-        ),
-        OptionalKey("retries"): POSITIVE_INT,
-        OptionalKey("retry_delay"): INTERVAL,
-        OptionalKey("retry_exponential_backoff"): BOOLEAN,
-        OptionalKey("run_as_user"): STRING,
-        OptionalKey("sla"): INTERVAL,
-        OptionalKey("start_date"): DATE,
-        OptionalKey("task_concurrency"): POSITIVE_INT,
-        OptionalKey("trigger_rule"): STRING,
-        OptionalKey("wait_for_downstream"): BOOLEAN,
-        OptionalKey("weight_rule"): Enum("downstream", "upstream", "absolute"),
-    }
-)
+        )
+        & checks
+    )
 
-SENSOR_ARGS = OPERATOR_ARGS + Dict(
-    {
-        OptionalKey("poke_interval"): INTERVAL_INT_SECONDS,
-        OptionalKey("soft_fail"): BOOLEAN,
-        OptionalKey("timeout"): POSITIVE_INT,
-    }
-)
 
-OPERATOR = (
-    Dict(
+def operators(check_imports):
+    return Mapping(STRING, operator(check_imports))
+
+
+def sensor(check_imports):
+    class_trafaret = CLASS
+    callback_trafaret = CLASS | CALLBACK
+    checks = And(check_for_class_callback_collisions, ensure_callback_args)
+
+    if not check_imports:
+        class_trafaret |= STRING
+        callback_trafaret |= STRING
+        checks = check_for_class_callback_collisions
+
+    return (
+        Dict(
+            {
+                OptionalKey("class"): class_trafaret,
+                OptionalKey("callback"): callback_trafaret,
+                OptionalKey("callback_args"): PARAMS,
+                OptionalKey("args"): (sensor_args() + Dict()).allow_extra("*"),
+            }
+        )
+        & checks
+    )
+
+
+def sensors(check_imports):
+    return Mapping(STRING, sensor(check_imports))
+
+
+def flow():
+    return Mapping(key=STRING, value=List(STRING, min_length=1))
+
+
+def dag_args(check_imports):
+    sla_miss_callback_trafaret = CALLBACK
+    if not check_imports:
+        sla_miss_callback_trafaret |= String
+
+    return Dict(
         {
-            OptionalKey("class"): CLASS,
-            OptionalKey("callback"): CLASS | CALLBACK,
-            OptionalKey("callback_args"): PARAMS,
-            OptionalKey("args"): (OPERATOR_ARGS + Dict()).allow_extra("*"),
+            OptionalKey("catchup"): BOOLEAN,
+            OptionalKey("concurrency"): POSITIVE_INT,
+            OptionalKey("dagrun_timeout"): INTERVAL,
+            # Sensor args is a superset of all the args.
+            OptionalKey("default_args"): sensor_args(),
+            OptionalKey("description"): STRING,
+            OptionalKey("end_date"): DATE,
+            OptionalKey("max_active_runs"): POSITIVE_INT,
+            OptionalKey("orientation"): STRING,
+            OptionalKey("schedule_interval"): NULL | CRON_PRESETS | CRONTAB_OR_INTERVAL,
+            OptionalKey("sla_miss_callback"): sla_miss_callback_trafaret,
+            OptionalKey("start_date"): DATE,
         }
     )
-    & check_for_class_callback_collisions
-    & ensure_callback_args
-)
 
-OPERATORS = Mapping(STRING, OPERATOR)
 
-SENSOR = (
-    Dict(
+def with_items():
+    return List(ANY) | Dict(using=CALLBACK) | Dict(from_stdout=STRING)
+
+
+def do_template(check_imports):
+    return Dict(
         {
-            OptionalKey("class"): CLASS,
-            OptionalKey("callback"): CLASS | CALLBACK,
-            OptionalKey("callback_args"): PARAMS,
-            OptionalKey("args"): (SENSOR_ARGS + Dict()).allow_extra("*"),
+            OptionalKey("operators"): operators(check_imports),
+            OptionalKey("sensors"): sensors(check_imports),
+            OptionalKey("flow"): flow(),
+            Key("with_items"): with_items(),
         }
     )
-    & check_for_class_callback_collisions
-    & ensure_callback_args
-)
 
-SENSORS = Mapping(STRING, SENSOR)
 
-FLOW = Mapping(key=STRING, value=List(STRING, min_length=1))
+def do_templates(check_imports):
+    return List(do_template(check_imports))
 
-DAG_ARGS = Dict(
-    {
-        OptionalKey("catchup"): BOOLEAN,
-        OptionalKey("concurrency"): POSITIVE_INT,
-        OptionalKey("dagrun_timeout"): INTERVAL,
-        # Sensor args is a superset of all the args.
-        OptionalKey("default_args"): SENSOR_ARGS,
-        OptionalKey("description"): STRING,
-        OptionalKey("end_date"): DATE,
-        OptionalKey("max_active_runs"): POSITIVE_INT,
-        OptionalKey("orientation"): STRING,
-        OptionalKey("schedule_interval"): NULL | CRON_PRESETS | CRONTAB_OR_INTERVAL,
-        OptionalKey("sla_miss_callback"): CALLBACK,
-        OptionalKey("start_date"): DATE,
-    }
-)
 
-WITH_ITEMS = List(ANY) | Dict(using=CALLBACK) | Dict(from_stdout=STRING)
+def defaults(check_imports):
+    return Dict(
+        {
+            OptionalKey("operators"): operator(check_imports),
+            OptionalKey("sensors"): sensor(check_imports),
+        }
+    )
 
-DO_TEMPLATE = Dict(
-    {
-        OptionalKey("operators"): OPERATORS,
-        OptionalKey("sensors"): SENSORS,
-        OptionalKey("flow"): FLOW,
-        Key("with_items"): WITH_ITEMS,
-    }
-)
 
-DO_TEMPLATES = List(DO_TEMPLATE)
+def dag(check_imports):
+    return Dict(
+        {
+            OptionalKey("args"): dag_args(check_imports),
+            OptionalKey("defaults"): defaults(check_imports),
+            OptionalKey("do"): do_templates(check_imports),
+            OptionalKey("operators"): operators(check_imports),
+            OptionalKey("sensors"): sensors(check_imports),
+            OptionalKey("flow"): flow(),
+        }
+    )
 
-DEFAULTS = Dict({OptionalKey("operators"): OPERATOR, OptionalKey("sensors"): SENSOR})
 
-DAG = Dict(
-    {
-        OptionalKey("args"): DAG_ARGS,
-        OptionalKey("defaults"): DEFAULTS,
-        OptionalKey("do"): DO_TEMPLATES,
-        OptionalKey("operators"): OPERATORS,
-        OptionalKey("sensors"): SENSORS,
-        OptionalKey("flow"): FLOW,
-    }
-)
+def dags(check_imports):
+    return Mapping(key=STRING, value=dag(check_imports))
 
-DAGS = Mapping(key=STRING, value=DAG)
 
-SCHEMA = Dict({Key("dags"): DAGS, OptionalKey("version"): VERSION})
+def schema(check_imports):
+    return Dict({Key("dags"): dags(check_imports), OptionalKey("version"): VERSION})
+
+
+SCHEMA = schema(check_imports=True)
+SCHEMA_WITHOUT_IMPORTS_CHECK = schema(check_imports=False)

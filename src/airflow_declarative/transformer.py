@@ -104,8 +104,8 @@ ENV.filters["yaml"] = yaml_filter
 ENV.add_extension(YamlExtension)
 
 
-def transform(schema):
-    schema0 = ensure_schema(schema)
+def transform(schema, check_imports=True):
+    schema0 = ensure_schema(schema, check_imports)
     schema1 = transform_templates(schema0)
     schema2 = transform_defaults(schema1)
     return schema2

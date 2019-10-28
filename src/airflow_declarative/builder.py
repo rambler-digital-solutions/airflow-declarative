@@ -20,16 +20,19 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from .schema import ensure_schema
 
 
-def build_dags(schema, dag_class=None, operator_class=None, sensor_class=None):
+def build_dags(
+    schema, dag_class=None, operator_class=None, sensor_class=None, check_imports=True
+):
     """
     :param dict schema: Airflow declarative DAGs schema.
     :param dag_class: DAG class. When not specified, the ``airflow.models.DAG``
                                  get used via implicit import.
     :param type operator_class: Airflow operator class.
     :param type sensor_class: Airflow sensor class.
+    :param bool check_imports: Whether or not check importable objects
     :rtype: list[airflow.models.DAG]
     """
-    schema = ensure_schema(schema)
+    schema = ensure_schema(schema, check_imports=check_imports)
 
     # We use implicit airflow imports by following reasons:
     # 1. Airflow project get renamed recently to apache-airflow, so we couldn't

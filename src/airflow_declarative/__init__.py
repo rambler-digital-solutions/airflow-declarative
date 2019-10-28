@@ -23,40 +23,53 @@ from . import builder, schema, transformer
 __all__ = ("from_path", "from_dict", "render")
 
 
-def from_path(path):
+def from_path(path, check_imports=True):
     """Load DAGs from a YAML file.
 
     :param str path: A path to the declarative YAML file.
+    :param bool check_imports: Whether or not check importable objects
     :rtype: list[airflow.models.DAG]
     """
-    return from_dict(schema.from_path(path))
+    return from_dict(
+        schema.from_path(path, check_imports=check_imports), check_imports=check_imports
+    )
 
 
-def from_dict(schema):
+def from_dict(schema, check_imports=True):
     """Load DAGs from a dict (i.e. the parsed YAML file contents).
 
     :param dict schema: The declarative YAML schema.
+    :param bool check_imports: Whether or not check importable objects
     :rtype: list[airflow.models.DAG]
     """
-    return builder.build_dags(transform(schema))
+    return builder.build_dags(
+        transform(schema, check_imports=check_imports), check_imports=check_imports
+    )
 
 
-def transform(schema):
+def transform(schema, check_imports=True):
     """Preprocess the declarative YAML schema:
     - validate the schema,
     - expand the `do` block,
     - expand `defaults`.
 
     :param dict schema: The declarative YAML schema.
+    :param bool check_imports: Whether or not check importable objects
     :rtype: dict
     """
-    return transformer.transform(schema)
+    return transformer.transform(schema, check_imports=check_imports)
 
 
-def render(path):
+def render(path, check_imports=True):
     """Return the transformed schema in yaml format. Useful for debugging.
 
     :param str path: A path to the declarative YAML file.
+    :param bool check_imports: Whether or not check importable objects
     :rtype: str
     """
-    return schema.dump(transform(schema.from_path(path)))
+    return schema.dump(
+        transform(
+            schema.from_path(path, check_imports=check_imports),
+            check_imports=check_imports,
+        )
+    )
