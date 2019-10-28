@@ -24,7 +24,20 @@ import re
 
 import trafaret as t
 from croniter import croniter
-from trafaret import Any, Bool, Dict, Email, Enum, Int, Key, List, Mapping, Null, String
+from trafaret import (
+    And,
+    Any,
+    Bool,
+    Dict,
+    Email,
+    Enum,
+    Int,
+    Key,
+    List,
+    Mapping,
+    Null,
+    String,
+)
 
 
 try:
@@ -34,6 +47,7 @@ except ImportError:  # pragma: no cover
 
 
 __all__ = (
+    "And",
     "Any",
     "Bool",
     "Callback",

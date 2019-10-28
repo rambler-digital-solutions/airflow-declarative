@@ -15,8 +15,10 @@
 # limitations under the License.
 #
 
+
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import importlib
 import inspect
 
 from airflow.utils.decorators import apply_defaults
@@ -29,11 +31,12 @@ class CallbackMixIn(object):
     _callback_instance = None
 
     def __init__(self, callback, args):
-        assert callable(callback), callback
         self._callback = callback
         self._callback_args = args
 
     def _call_callback(self, context):
+        if isinstance(self._callback, (type(b""), type(""))):
+            self._callback = import_object(self._callback)
         kwargs = self._callback_args
         if self._callback_instance is not None:
             return self._callback_instance()
@@ -79,3 +82,20 @@ class GenericSensor(BaseSensorOperator, CallbackMixIn):
                 " Return boolean back please."
             )
         return bool(rval)
+
+
+def import_object(path):
+    """"Imports object by a given path.
+
+    :param str path: Object path specification in format
+                     ``package.subpackage.module:target``.
+    :returns: In case of success returns the ``target`` part of the path.
+    """
+    module, object_name = path.split(":", 1)
+    mod = importlib.import_module(module)
+    if "." in object_name:
+        class_name, class_method_name = object_name.split(".", 1)
+        klass = getattr(mod, class_name)
+        return getattr(klass, class_method_name)
+    else:
+        return getattr(mod, object_name)
