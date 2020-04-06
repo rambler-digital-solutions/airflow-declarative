@@ -139,6 +139,7 @@ OPERATOR_ARGS = Dict(
     {
         OptionalKey("adhoc"): BOOLEAN,
         OptionalKey("depends_on_past"): BOOLEAN,
+        OptionalKey("do_xcom_push"): BOOLEAN,
         OptionalKey("email"): EMAIL,
         OptionalKey("email_on_failure"): BOOLEAN,
         OptionalKey("email_on_retry"): BOOLEAN,
@@ -217,18 +218,25 @@ FLOW = Mapping(key=STRING, value=List(STRING, min_length=1))
 
 DAG_ARGS = Dict(
     {
+        OptionalKey("access_control"): Dict(allow_extra="*"),
         OptionalKey("catchup"): BOOLEAN,
         OptionalKey("concurrency"): POSITIVE_INT,
         OptionalKey("dagrun_timeout"): INTERVAL,
         # Sensor args is a superset of all the args.
         OptionalKey("default_args"): SENSOR_ARGS,
+        OptionalKey("default_view"): STRING,
         OptionalKey("description"): STRING,
+        OptionalKey("doc_md"): STRING,
         OptionalKey("end_date"): DATE,
+        OptionalKey("is_paused_upon_creation"): BOOLEAN,
+        OptionalKey("jinja_environment_kwargs"): Dict(allow_extra="*"),
         OptionalKey("max_active_runs"): POSITIVE_INT,
         OptionalKey("orientation"): STRING,
+        OptionalKey("params"): PARAMS,
         OptionalKey("schedule_interval"): NULL | CRON_PRESETS | CRONTAB_OR_INTERVAL,
         OptionalKey("sla_miss_callback"): CALLBACK,
         OptionalKey("start_date"): DATE,
+        OptionalKey("tags"): List(STRING),
     }
 )
 
