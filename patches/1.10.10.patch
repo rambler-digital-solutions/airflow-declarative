@@ -1,0 +1,123 @@
+From e346d3c6bbc98b0e02d8b8124d2e5cb91f1500cc Mon Sep 17 00:00:00 2001
+From: Kostya Esmukov <kostya@esmukov.ru>
+Date: Sun, 14 Jul 2019 13:15:54 +0300
+Subject: [PATCH] Add support for declarative dags provided by
+ airflow-declarative project
+
+---
+ airflow/models/dagbag.py        | 15 +++++++++++++--
+ airflow/utils/dag_processing.py |  4 ++--
+ airflow/www/views.py            |  8 ++++++--
+ airflow/www_rbac/views.py       |  8 ++++++--
+ setup.py                        |  1 +
+ 5 files changed, 28 insertions(+), 8 deletions(-)
+
+diff --git a/airflow/models/dagbag.py b/airflow/models/dagbag.py
+index 67b44fcde..189547df9 100644
+--- a/airflow/models/dagbag.py
++++ b/airflow/models/dagbag.py
+@@ -208,8 +208,9 @@ class DagBag(BaseDagBag, LoggingMixin):
+ 
+         mods = []
+         is_zipfile = zipfile.is_zipfile(filepath)
++        _, file_ext = os.path.splitext(os.path.split(filepath)[-1])
+         if not is_zipfile:
+-            if safe_mode:
++            if safe_mode and file_ext not in ('.yaml', '.yml'):
+                 with open(filepath, 'rb') as f:
+                     content = f.read()
+                     if not all([s in content for s in (b'DAG', b'airflow')]):
+@@ -233,7 +234,17 @@ class DagBag(BaseDagBag, LoggingMixin):
+ 
+             with timeout(self.DAGBAG_IMPORT_TIMEOUT):
+                 try:
+-                    m = imp.load_source(mod_name, filepath)
++                    if file_ext in ('.yaml', '.yml'):
++                        # Avoid the possibility of cyclic imports error
++                        # by importing Declarative here, in a function:
++                        import airflow_declarative
++
++                        declarative_dags_list = airflow_declarative.from_path(filepath)
++                        m = imp.new_module(mod_name)
++                        for i, dag in enumerate(declarative_dags_list):
++                            setattr(m, "dag%s" % i, dag)
++                    else:
++                        m = imp.load_source(mod_name, filepath)
+                     mods.append(m)
+                 except Exception as e:
+                     self.log.exception("Failed to import: %s", filepath)
+diff --git a/airflow/utils/dag_processing.py b/airflow/utils/dag_processing.py
+index c888726f4..26fc12f32 100644
+--- a/airflow/utils/dag_processing.py
++++ b/airflow/utils/dag_processing.py
+@@ -356,7 +356,7 @@ def list_py_file_paths(directory, safe_mode=conf.getboolean('core', 'DAG_DISCOVE
+                         continue
+                     mod_name, file_ext = os.path.splitext(
+                         os.path.split(file_path)[-1])
+-                    if file_ext != '.py' and not zipfile.is_zipfile(file_path):
++                    if file_ext not in ('.py', '.yaml', '.yml') and not zipfile.is_zipfile(file_path):
+                         continue
+                     if any([re.findall(p, file_path) for p in patterns]):
+                         continue
+@@ -370,7 +370,7 @@ def list_py_file_paths(directory, safe_mode=conf.getboolean('core', 'DAG_DISCOVE
+                             might_contain_dag = all(
+                                 [s in content for s in (b'DAG', b'airflow')])
+ 
+-                    if not might_contain_dag:
++                    if not might_contain_dag and file_ext == '.py':
+                         continue
+ 
+                     file_paths.append(file_path)
+diff --git a/airflow/www/views.py b/airflow/www/views.py
+index 1202a4571..fbbcecd7e 100644
+--- a/airflow/www/views.py
++++ b/airflow/www/views.py
+@@ -695,8 +695,12 @@ class Airflow(AirflowViewMixin, BaseView):
+             dag_id = request.args.get('dag_id')
+             dag_orm = models.DagModel.get_dagmodel(dag_id, session=session)
+             code = DagCode.get_code_by_fileloc(dag_orm.fileloc)
+-            html_code = highlight(
+-                code, lexers.PythonLexer(), HtmlFormatter(linenos=True))
++            if dag_orm.fileloc.endswith(('.yml', '.yaml')):
++                html_code = highlight(
++                    code, lexers.YamlLexer(), HtmlFormatter(linenos=True))
++            else:
++                html_code = highlight(
++                    code, lexers.PythonLexer(), HtmlFormatter(linenos=True))
+ 
+         except Exception as e:
+             all_errors += (
+diff --git a/airflow/www_rbac/views.py b/airflow/www_rbac/views.py
+index 6b14deb7a..935e6b33b 100644
+--- a/airflow/www_rbac/views.py
++++ b/airflow/www_rbac/views.py
+@@ -521,8 +521,12 @@ class Airflow(AirflowBaseView):
+             dag_id = request.args.get('dag_id')
+             dag_orm = DagModel.get_dagmodel(dag_id, session=session)
+             code = DagCode.get_code_by_fileloc(dag_orm.fileloc)
+-            html_code = highlight(
+-                code, lexers.PythonLexer(), HtmlFormatter(linenos=True))
++            if dag_orm.fileloc.endswith(('.yml', '.yaml')):
++                html_code = highlight(
++                    code, lexers.YamlLexer(), HtmlFormatter(linenos=True))
++            else:
++                html_code = highlight(
++                    code, lexers.PythonLexer(), HtmlFormatter(linenos=True))
+ 
+         except Exception as e:
+             all_errors += (
+diff --git a/setup.py b/setup.py
+index 047cf6b85..794360fc6 100644
+--- a/setup.py
++++ b/setup.py
+@@ -539,6 +539,7 @@ EXTRAS_REQUIREMENTS = {
+ # DEPENDENCIES_EPOCH_NUMBER in the Dockerfile.ci
+ #####################################################################################################
+ INSTALL_REQUIREMENTS = [
++    'airflow-declarative',
+     'alembic>=1.0, <2.0',
+     'argcomplete~=1.10',
+     'attrs~=19.3',
+-- 
+2.25.0
+
