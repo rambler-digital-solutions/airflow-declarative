@@ -64,7 +64,9 @@ def pytest_generate_tests(metafunc):
             ),
             zip(
                 list_examples("logic-errors"),
-                itertools.repeat((RuntimeError, TypeError)),
+                itertools.repeat(
+                    (RuntimeError, TypeError, airflow.exceptions.AirflowException)
+                ),
             ),
             zip(
                 list_examples("airflow-errors"),
