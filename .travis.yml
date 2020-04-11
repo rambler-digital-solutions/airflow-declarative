@@ -9,10 +9,6 @@ python:
   - "3.8"
   - "3.9-dev"
 
-matrix:
-  allow_failures:
-    - python: "3.9-dev"
-
 install: pip install tox-travis tox tox-venv
 
 # Used by the `test` stage.
@@ -23,6 +19,9 @@ stages:
   - lint
 
 jobs:
+  allow_failures:
+    - python: "3.9-dev"
+
   include:
 
     # The `test` stage using the `python` matrix defined above
