@@ -108,7 +108,7 @@ def transform(schema):
     schema0 = ensure_schema(schema)
     schema1 = transform_templates(schema0)
     schema2 = transform_defaults(schema1)
-    return schema2
+    return ensure_schema(schema2)
 
 
 def transform_templates(schema):

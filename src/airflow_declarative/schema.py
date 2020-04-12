@@ -242,10 +242,13 @@ DAG_ARGS = Dict(
 
 WITH_ITEMS = List(ANY) | Dict(using=CALLBACK) | Dict(from_stdout=STRING)
 
+TEMPLATE_OPERATORS = Mapping(STRING, ANY)
+TEMPLATE_SENSORS = Mapping(STRING, ANY)
+
 DO_TEMPLATE = Dict(
     {
-        OptionalKey("operators"): OPERATORS,
-        OptionalKey("sensors"): SENSORS,
+        OptionalKey("operators"): TEMPLATE_OPERATORS,
+        OptionalKey("sensors"): TEMPLATE_SENSORS,
         OptionalKey("flow"): FLOW,
         Key("with_items"): WITH_ITEMS,
     }
