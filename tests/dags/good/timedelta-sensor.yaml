@@ -1,0 +1,45 @@
+#
+# Copyright 2019, Rambler Digital Solutions
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+dags:
+  time_delta_sensor:
+    args:
+      start_date: 2017-07-27
+      schedule_interval: 1d
+    operators:
+      dummy_operator:
+        class: airflow.operators.dummy_operator:DummyOperator
+    sensors:
+      timedelta_sensor:
+        class: airflow.operators.sensors:TimeDeltaSensor
+        args:
+          delta: 6h
+    flow:
+      timedelta_sensor:
+      - dummy_operator
+    do:
+    - sensors:
+        dynamic_timedelta_sensor_{{ item.name }}:
+          class: airflow.operators.sensors:TimeDeltaSensor
+          args:
+            delta: '{{ item.sensor_delta }}'
+      flow:
+        dynamic_timedelta_sensor_{{ item.name }}:
+        - dummy_operator
+      with_items:
+        - name: 1h
+          sensor_delta: 1h

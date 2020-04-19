@@ -32,7 +32,11 @@ dags:
         runme_{{ item }}:
           class: airflow.operators.bash_operator:BashOperator
           args:
-            bash_command: '{% raw %} echo "{{ task_instance_key_str }}" && sleep 1 {% endraw%}'
+            bash_command: |
+              {% raw %}
+              echo "The following will not be interpreted by jinja:"
+              echo "{{ task_instance_key_str }}" && sleep 1
+              {% endraw%}
       flow:
         runme_{{ item }}:
         - run_after_loop
@@ -46,7 +50,9 @@ dags:
       also_run_this:
         class: airflow.operators.bash_operator:BashOperator
         args:
-          bash_command: echo "run_id={{ run_id }} | dag_run={{ dag_run }}"
+          bash_command: |
+            echo "A bash command:"
+            echo "run_id={{ run_id }} | dag_run={{ dag_run }}"
       run_after_loop:
         class: airflow.operators.bash_operator:BashOperator
         args:
