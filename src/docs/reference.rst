@@ -202,8 +202,8 @@ FLOW
 
 The ``FLOW`` atom defines the DAG links between the operators.
 
-``FLOW`` is a dict of lists, where a key is a downstream operator name,
-and a value is a list of upstream operators.
+``FLOW`` is a dict of lists, where a key is an upstream operator name,
+and a value is a list of downstream operators.
 
 Consider the following flow:
 
@@ -221,10 +221,20 @@ equivalent would be:
 
 .. code-block:: python
 
-    my_sensor.set_upstream(my_task_1)
-    my_sensor.set_upstream(my_task_2)
+    my_sensor.set_downstream(my_task_1)
+    my_sensor.set_downstream(my_task_2)
 
-    my_task_1.set_upstream(my_task_3)
+    my_task_1.set_downstream(my_task_3)
+
+Or in Airflow 1.8, this can be done with the Python bitshift operators as:
+
+.. code-block:: python
+
+    my_sensor >> my_task_1
+    my_sensor >> my_task_2
+    
+    my_task_1 >> my_task_3
+    
 
 This would be rendered in the Airflow web-interface like this:
 
