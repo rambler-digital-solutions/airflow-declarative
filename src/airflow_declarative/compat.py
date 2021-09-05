@@ -1,7 +1,7 @@
 try:
     # Python 3
     from collections.abc import Iterable, Mapping
-except ImportError:
+except ImportError:  # pragma: no cover
     # Python 2.7
     from collections import Iterable, Mapping
 
@@ -9,7 +9,7 @@ except ImportError:
 try:
     # Airflow 2
     from airflow.sensors.base import BaseSensorOperator
-except ImportError:
+except ImportError:  # pragma: no cover
     try:
         # Since Airflow 1.10
         from airflow.sensors.base_sensor_operator import BaseSensorOperator
@@ -20,13 +20,13 @@ except ImportError:
 try:
     # Airflow 2
     from airflow.models import BaseOperator
-except ImportError:
+except ImportError:  # pragma: no cover
     from airflow.operators import BaseOperator
 
 try:
     # Airflow 2
     from airflow.utils.dag_cycle_tester import test_cycle as _test_cycle
-except ImportError:
+except ImportError:  # pragma: no cover
     _test_cycle = None
 
 

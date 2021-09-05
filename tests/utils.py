@@ -31,7 +31,7 @@ def list_examples(kind):
     ]
 
 
-def noop_callback(*args, **kwargs):
+def noop_callback(*args, **kwargs):  # pragma: no cover
     pass
 
 
