@@ -21,9 +21,9 @@ import datetime
 
 import pendulum
 from airflow import DAG
+from airflow.models import BaseOperator
 
 import airflow_declarative
-from airflow_declarative.compat import BaseOperator
 
 
 def test_example_bash_operator(good_dag_path):

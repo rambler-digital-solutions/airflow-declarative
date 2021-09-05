@@ -19,7 +19,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import inspect
 
-from .compat import BaseOperator, BaseSensorOperator
+from airflow.models import BaseOperator
+from airflow.sensors.base import BaseSensorOperator
 
 
 class CallbackMixIn(object):
