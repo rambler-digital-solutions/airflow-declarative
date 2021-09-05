@@ -24,7 +24,7 @@ dags:
         callback: tests.utils:operator_callback
     sensors:
       sensor:
-        class: airflow.sensors.http_sensor:HttpSensor
+        class: airflow.providers.http.sensors.http:HttpSensor
         args:
           endpoint: http://localhost
         callback_args:
