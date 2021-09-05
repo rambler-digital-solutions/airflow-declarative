@@ -42,7 +42,7 @@ dags:
       - 2
     operators:
       run_this_last:
-        class: airflow.operators.dummy_operator:DummyOperator
+        class: airflow.operators.dummy:DummyOperator
       also_run_this:
         class: airflow.operators.bash_operator:BashOperator
         args:

@@ -36,7 +36,7 @@ An example of a simple declarative DAG:
           start_date: 2019-07-01
         operators:
           my_operator:
-            class: airflow.operators.dummy_operator:DummyOperator
+            class: airflow.operators.dummy:DummyOperator
 
 
 .. toctree::

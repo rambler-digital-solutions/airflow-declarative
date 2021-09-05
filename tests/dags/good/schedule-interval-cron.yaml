@@ -21,4 +21,4 @@ dags:
       schedule_interval: 53 5 * * *
     operators:
       operator:
-        class: airflow.operators.dummy_operator:DummyOperator
+        class: airflow.operators.dummy:DummyOperator

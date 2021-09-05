@@ -21,4 +21,4 @@ dags:
       start_date: 2017-07-27
     operators:
       operator:
-        class: airflow.operators.dummy_operator:DummyOperator
+        class: airflow.operators.dummy:DummyOperator
