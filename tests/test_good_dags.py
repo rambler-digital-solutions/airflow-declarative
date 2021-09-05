@@ -46,5 +46,5 @@ def test_good_dags(path):
 def test_serde(path):
     schema0 = airflow_declarative.transform(airflow_declarative.schema.from_path(path))
     content = airflow_declarative.render(path)
-    schema1 = airflow_declarative.schema.ensure_schema(yaml.load(content))
+    schema1 = airflow_declarative.schema.ensure_schema(yaml.safe_load(content))
     assert schema0 == schema1
