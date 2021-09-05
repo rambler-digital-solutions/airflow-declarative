@@ -136,11 +136,11 @@ the ``__init__`` args of
 the :class:`airflow.sensors.base_sensor_operator.BaseSensorOperator`.
 
 The ``OPERATOR``/``SENSOR`` callable might be specified as a class.
-Example for :class:`airflow.operators.bash_operator.BashOperator`:
+Example for :class:`airflow.operators.bash.BashOperator`:
 
 .. code-block:: yaml
 
-    class: airflow.operators.bash_operator:BashOperator
+    class: airflow.operators.bash:BashOperator
     args:
       bash_command: 'echo "Hello World {{ ds }}"'
 
