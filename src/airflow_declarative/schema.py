@@ -113,6 +113,7 @@ Dumper.add_representer(types.FunctionType, Dumper.represent_callable)
 Dumper.add_multi_representer(dict, Dumper.represent_dict)
 Dumper.add_multi_representer(list, Dumper.represent_list)
 Dumper.add_multi_representer(tuple, Dumper.represent_list)
+Dumper.add_multi_representer(type, Dumper.represent_callable)
 
 
 ANY = Any()
