@@ -7,20 +7,24 @@ except ImportError:
 
 
 try:
-    # Since Airflow 1.10
-    from airflow.sensors.base_sensor_operator import BaseSensorOperator
+    # Airflow 2
+    from airflow.sensors.base import BaseSensorOperator
 except ImportError:
-    from airflow.operators.sensors import BaseSensorOperator
+    try:
+        # Since Airflow 1.10
+        from airflow.sensors.base_sensor_operator import BaseSensorOperator
+    except ImportError:
+        from airflow.operators.sensors import BaseSensorOperator
 
 
 try:
-    # Airflow master
+    # Airflow 2
     from airflow.models import BaseOperator
 except ImportError:
     from airflow.operators import BaseOperator
 
 try:
-    # Airflow master
+    # Airflow 2
     from airflow.utils.dag_cycle_tester import test_cycle as _test_cycle
 except ImportError:
     _test_cycle = None
@@ -31,7 +35,7 @@ __all__ = ("BaseOperator", "BaseSensorOperator", "Iterable", "Mapping", "test_cy
 
 def test_cycle(dag):
     if _test_cycle is not None:
-        # Airflow master
+        # Airflow 2
         _test_cycle(dag)
     elif hasattr(dag, "test_cycle"):
         # Since Airflow 1.10
