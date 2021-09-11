@@ -30,7 +30,7 @@ dags:
     do:
     - operators:
         runme_{{ item }}:
-          class: airflow.operators.bash_operator:BashOperator
+          class: airflow.operators.bash:BashOperator
           args:
             bash_command: '{% raw %} echo "{{ task_instance_key_str }}" && sleep 1 {% endraw%}'
       flow:
@@ -42,13 +42,13 @@ dags:
       - 2
     operators:
       run_this_last:
-        class: airflow.operators.dummy_operator:DummyOperator
+        class: airflow.operators.dummy:DummyOperator
       also_run_this:
-        class: airflow.operators.bash_operator:BashOperator
+        class: airflow.operators.bash:BashOperator
         args:
           bash_command: echo "run_id={{ run_id }} | dag_run={{ dag_run }}"
       run_after_loop:
-        class: airflow.operators.bash_operator:BashOperator
+        class: airflow.operators.bash:BashOperator
         args:
           bash_command: echo 1
     flow:

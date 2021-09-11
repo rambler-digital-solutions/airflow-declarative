@@ -43,7 +43,7 @@ clean:
 # target: develop - Install package in editable mode with `develop` extras
 develop:
 	@${PYTHON} -m pip install --upgrade pip setuptools wheel
-	@${PYTHON} -m pip install --upgrade 'apache-airflow<1.11,>=1.10'
+	@${PYTHON} -m pip install --upgrade 'apache-airflow<2.2,>=2.1'
 	@${PYTHON} -m pip install -e '.[develop]'
 
 

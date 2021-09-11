@@ -19,10 +19,11 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import datetime
 
+import pendulum
 from airflow import DAG
+from airflow.models import BaseOperator
 
 import airflow_declarative
-from airflow_declarative.compat import BaseOperator
 
 
 def test_example_bash_operator(good_dag_path):
@@ -39,8 +40,8 @@ def test_example_bash_operator(good_dag_path):
 
     assert yml_dag.default_args["owner"] == "airflow"
 
-    assert yml_dag.start_date == datetime.datetime(2017, 7, 27, 0, 0, 0)
-    assert yml_dag.end_date == datetime.datetime(2018, 6, 27, 12, 0, 0)
+    assert yml_dag.start_date == pendulum.datetime(2017, 7, 27, 0, 0, 0)
+    assert yml_dag.end_date == pendulum.datetime(2018, 6, 27, 12, 0, 0)
 
     assert yml_dag.schedule_interval == datetime.timedelta(days=1)
 

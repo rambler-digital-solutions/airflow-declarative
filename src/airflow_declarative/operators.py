@@ -19,9 +19,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import inspect
 
-from airflow.utils.decorators import apply_defaults
-
-from .compat import BaseOperator, BaseSensorOperator
+from airflow.models import BaseOperator
+from airflow.sensors.base import BaseSensorOperator
 
 
 class CallbackMixIn(object):
@@ -50,7 +49,6 @@ class GenericOperator(BaseOperator, CallbackMixIn):
     context.
     """
 
-    @apply_defaults
     def __init__(self, _callback, _callback_args, *args, **kwargs):
         CallbackMixIn.__init__(self, _callback, _callback_args)
         super(GenericOperator, self).__init__(*args, **kwargs)
@@ -65,7 +63,6 @@ class GenericSensor(BaseSensorOperator, CallbackMixIn):
     context.
     """
 
-    @apply_defaults
     def __init__(self, _callback, _callback_args, *args, **kwargs):
         CallbackMixIn.__init__(self, _callback, _callback_args)
         super(GenericSensor, self).__init__(*args, **kwargs)

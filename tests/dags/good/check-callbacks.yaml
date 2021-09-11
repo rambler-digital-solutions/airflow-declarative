@@ -21,7 +21,7 @@ dags:
       schedule_interval: 1d
     operators:
       operator:
-        class: airflow.operators.dummy_operator:DummyOperator
+        class: airflow.operators.dummy:DummyOperator
         args:
           on_success_callback: tests.utils:noop_callback
           on_failure_callback: tests.utils:noop_callback

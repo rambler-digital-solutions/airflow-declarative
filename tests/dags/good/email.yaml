@@ -21,6 +21,6 @@ dags:
       schedule_interval: 1d
     operators:
       operator:
-        class: airflow.operators.dummy_operator:DummyOperator
+        class: airflow.operators.dummy:DummyOperator
         args:
           email: mail@example.org
