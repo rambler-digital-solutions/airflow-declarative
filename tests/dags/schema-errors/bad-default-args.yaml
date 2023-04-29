@@ -18,7 +18,7 @@ dags:
   dag:
     args:
       start_date: 2017-07-27
-      schedule_interval: 1d
+      schedule: 1d
       default_args:
         blahblah: blipblop
     operators:

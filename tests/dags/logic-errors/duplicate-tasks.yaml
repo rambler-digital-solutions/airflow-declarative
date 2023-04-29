@@ -20,7 +20,7 @@ dags:
       start_date: 2017-07-27
     operators:
       task:
-        class: airflow.operators.dummy:DummyOperator
+        class: airflow.operators.empty:EmptyOperator
     sensors:
       task:
         class: airflow.providers.http.sensors.http:HttpSensor

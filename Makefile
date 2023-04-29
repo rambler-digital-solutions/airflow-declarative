@@ -1,13 +1,12 @@
 # PN - Project Name
 PN := airflow_declarative
-# PN - Project Version
-PV := `python setup.py -q --version`
+# PV - Project Version
+PV := `poetry version -s`
 
-PYTHON_VENV := python3
-PYTHON := python
+PYTHON := python3
 SHELL  := /bin/sh
 
-LINT_TARGET := setup.py src/ tests/
+LINT_TARGET := src/ tests/
 
 SPHINXOPTS  ?= -n -W
 
@@ -18,14 +17,13 @@ all: help
 .PHONY: check
 # target: check - Run all checks: linters and tests (with coverage)
 check: lint test check-docs
-	@${PYTHON} setup.py check
 
 
 .PHONY: check-docs
 # target: check-docs - Run Sphinx but don't actually generate the docs
 check-docs:
 	@# Doesn't generate any output but prints out errors and warnings.
-	@sphinx-build -M dummy src/docs build/docs $(SPHINXOPTS)
+	@. ./airflow_env.sh && sphinx-build -M dummy src/docs build/docs $(SPHINXOPTS)
 
 
 .PHONY: clean
@@ -42,31 +40,19 @@ clean:
 .PHONY: develop
 # target: develop - Install package in editable mode with `develop` extras
 develop:
-	@${PYTHON} -m pip install --upgrade pip setuptools wheel
-	@${PYTHON} -m pip install --upgrade 'apache-airflow<2.2,>=2.1'
-	@${PYTHON} -m pip install -e '.[develop]'
+	@poetry install --sync
 
 
 .PHONY: dist
 # target: dist - Build all artifacts
-dist: dist-sdist dist-wheel
+dist:
+	@poetry build
 
-
-.PHONY: dist-sdist
-# target: dist-sdist - Build sdist artifact
-dist-sdist:
-	@${PYTHON} setup.py sdist
-
-
-.PHONY: dist-wheel
-# target: dist-wheel - Build wheel artifact
-dist-wheel:
-	@${PYTHON} setup.py bdist_wheel
 
 .PHONY: docs
 # target: docs - Build Sphinx docs
 docs:
-	@sphinx-build -M html src/docs build/docs $(SPHINXOPTS)
+	@. ./airflow_env.sh && sphinx-build -M html src/docs build/docs $(SPHINXOPTS)
 
 .PHONY: format
 # target: format - Format the code according to the coding styles
@@ -80,7 +66,7 @@ format-black:
 
 .PHONY: format-isort
 format-isort:
-	@isort -rc ${LINT_TARGET}
+	@isort ${LINT_TARGET}
 
 
 .PHONY: help
@@ -115,7 +101,7 @@ lint-flake8:
 
 .PHONY: lint-isort
 lint-isort:
-	@${PYTHON} -m isort.main -df -c -rc ${LINT_TARGET}
+	@${PYTHON} -m isort.main -c ${LINT_TARGET}
 
 
 .PHONY: lint-pylint
@@ -138,14 +124,8 @@ report-pylint:
 .PHONY: test
 # target: test - Run tests with coverage
 test:
-	@${PYTHON} -m coverage run -m py.test
+	@. ./airflow_env.sh && ${PYTHON} -m coverage run -m pytest
 	@${PYTHON} -m coverage report
-
-
-# `venv` target is intentionally not PHONY.
-# target: venv - Creates virtual environment
-venv:
-	@${PYTHON_VENV} -m venv venv
 
 
 .PHONY: version

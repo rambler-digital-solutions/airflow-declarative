@@ -15,12 +15,11 @@
 # limitations under the License.
 #
 
-from __future__ import absolute_import, division, print_function, unicode_literals
 
 import pytest
-from tests.utils import Operator, operator
 
 import airflow_declarative
+from tests.utils import Operator, operator
 
 
 @pytest.fixture()

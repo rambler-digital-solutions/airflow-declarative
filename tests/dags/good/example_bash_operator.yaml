@@ -26,7 +26,7 @@ dags:
         owner: airflow
       start_date: 2017-07-27  # relative start_date not supported yet
       end_date: 2018-06-27 12:00:00
-      schedule_interval: 1d
+      schedule: 1d
     do:
     - operators:
         runme_{{ item }}:
@@ -42,7 +42,7 @@ dags:
       - 2
     operators:
       run_this_last:
-        class: airflow.operators.dummy:DummyOperator
+        class: airflow.operators.empty:EmptyOperator
       also_run_this:
         class: airflow.operators.bash:BashOperator
         args:

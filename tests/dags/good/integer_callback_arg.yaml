@@ -18,7 +18,7 @@ dags:
   mydag:
     args:
       start_date: 2017-07-27
-      schedule_interval: 1d
+      schedule: 1d
     operators:
       myoperator:
         callback: tests.utils:Operator

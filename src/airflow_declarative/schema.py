@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-from __future__ import absolute_import, division, print_function, unicode_literals
 
 import datetime
 import types
@@ -128,9 +127,11 @@ STRING = String()
 TIMEDELTA = TimeDelta()
 
 CRON_PRESETS = Enum("@once", "@hourly", "@daily", "@weekly", "@monthly", "@yearly")
-CRONTAB_OR_INTERVAL = (TIMEDELTA | STRING | POSITIVE_INT) >> cast_crontab_or_interval
-INTERVAL = (TIMEDELTA | STRING | POSITIVE_INT) >> cast_interval
-INTERVAL_INT_SECONDS = (TIMEDELTA | STRING | POSITIVE_INT) >> (
+CRONTAB_OR_INTERVAL = (
+    TIMEDELTA | STRING | POSITIVE_INT  # pylint: disable=E1131
+) >> cast_crontab_or_interval
+INTERVAL = (TIMEDELTA | STRING | POSITIVE_INT) >> cast_interval  # pylint: disable=E1131
+INTERVAL_INT_SECONDS = (TIMEDELTA | STRING | POSITIVE_INT) >> (  # pylint: disable=E1131
     lambda x: cast_interval(x).total_seconds()
 )
 PARAMS = Mapping(STRING, ANY)
@@ -234,14 +235,16 @@ DAG_ARGS = Dict(
         OptionalKey("max_active_runs"): POSITIVE_INT,
         OptionalKey("orientation"): STRING,
         OptionalKey("params"): PARAMS,
-        OptionalKey("schedule_interval"): NULL | CRON_PRESETS | CRONTAB_OR_INTERVAL,
+        OptionalKey("schedule"): NULL | CRON_PRESETS | CRONTAB_OR_INTERVAL,
         OptionalKey("sla_miss_callback"): CALLBACK,
         OptionalKey("start_date"): DATE,
         OptionalKey("tags"): List(STRING),
     }
 )
 
-WITH_ITEMS = List(ANY) | Dict(using=CALLBACK) | Dict(from_stdout=STRING)
+WITH_ITEMS = (
+    List(ANY) | Dict(using=CALLBACK) | Dict(from_stdout=STRING)  # pylint: disable=E1131
+)
 
 DO_TEMPLATE = Dict(
     {

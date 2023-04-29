@@ -20,7 +20,7 @@ dags:
       start_date: 2017-07-27
     operators:
       operator:
-        class: airflow.operators.dummy:DummyOperator
+        class: airflow.operators.empty:EmptyOperator
         callback: tests.utils:operator_callback
     sensors:
       sensor:

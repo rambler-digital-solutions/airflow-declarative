@@ -18,4 +18,4 @@ dags:
   dag:
     args:
       start_date: 2017-07-27
-      schedule_interval: 1z
+      schedule: 1z

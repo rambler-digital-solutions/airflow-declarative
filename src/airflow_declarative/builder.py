@@ -15,9 +15,8 @@
 # limitations under the License.
 #
 
-from __future__ import absolute_import, division, print_function, unicode_literals
 
-from airflow.utils.dag_cycle_tester import test_cycle
+from airflow.utils.dag_cycle_tester import check_cycle
 
 from .schema import ensure_schema
 
@@ -91,7 +90,7 @@ def build_dag(dag_id, schema, dag_class, operator_class, sensor_class):
 
     build_flow(dict(operators, **sensors), schema.get("flow", {}))
 
-    test_cycle(dag)
+    check_cycle(dag)
 
     return dag
 

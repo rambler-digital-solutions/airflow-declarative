@@ -28,34 +28,28 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
-import subprocess
 
-
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import tomlkit as toml
 
 
 # -- Project information -----------------------------------------------------
 
 
 def get_metadata_value(property_name):
-    # Requires python >=3.5
-
-    setup_py_dir = os.path.join(os.path.dirname(__file__), "..", "..")
-    setup_py_file = os.path.join(setup_py_dir, "setup.py")
-
-    out = subprocess.run(
-        ["python", setup_py_file, "-q", "--%s" % property_name],
-        stdout=subprocess.PIPE,
-        cwd=setup_py_dir,
-        check=True,
+    pyproject_file = os.path.join(
+        os.path.dirname(__file__), "..", "..", "pyproject.toml"
     )
-    property_value = out.stdout.decode().strip()
-    return property_value
+    with open(pyproject_file) as pp:
+        project_cfg = toml.load(pp)
+        value = project_cfg["tool"]["poetry"][property_name]
+    if isinstance(value, list):
+        return ", ".join(value)
+    else:
+        return str(value)
 
 
 project = get_metadata_value("name")
-author = get_metadata_value("author")
+author = get_metadata_value("authors")
 
 _copyright_year = 2019
 copyright = "%s, %s" % (_copyright_year, author)
@@ -98,7 +92,7 @@ master_doc = "index"
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

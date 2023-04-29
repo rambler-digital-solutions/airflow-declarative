@@ -15,11 +15,10 @@
 # limitations under the License.
 #
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import logging
 import os
 
+import airflow
 import pytest
 
 from .utils import examples_path
@@ -28,6 +27,8 @@ from .utils import examples_path
 # https://github.com/eisensheng/pytest-catchlog/issues/59
 logger = logging.getLogger("flake8")
 logger.propagate = False
+
+airflow.__version__
 
 
 @pytest.fixture()

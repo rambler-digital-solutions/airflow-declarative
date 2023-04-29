@@ -1,0 +1,34 @@
+[tool.poetry]
+name = "airflow-declarative"
+version = "2.0"
+description = "Airflow DAGs done declaratively"
+license = "Apache-2.0"
+authors = ["Usermodel RamblerCo <um@rambler-co.ru>"]
+readme = "README.rst"
+maintainers = [
+    "Alexander Shorin <kxepal@gmail.com>",
+    "Ivan Akhlestin <j.helsinki@gmail.com>",
+]
+repository = "https://github.com/rambler-digital-solutions/airflow-declarative"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+croniter = "*"
+jinja2 = "^3"
+trafaret-config = "2.0.2"
+trafaret = "^1.0,<2"
+
+[tool.poetry.dev-dependencies]
+apache-airflow = "^2.1"
+black = "*"
+coverage = "*"
+flake8 = "*"
+isort = "*"
+pylint = "*"
+pytest = "*"
+sphinx-rtd-theme = "*"
+sphinx = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
