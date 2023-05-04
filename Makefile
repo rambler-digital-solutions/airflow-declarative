@@ -101,7 +101,7 @@ lint-flake8:
 
 .PHONY: lint-isort
 lint-isort:
-	@${PYTHON} -m isort.main -c ${LINT_TARGET}
+	@${PYTHON} -m isort -c ${LINT_TARGET}
 
 
 .PHONY: lint-pylint

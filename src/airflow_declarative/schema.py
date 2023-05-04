@@ -132,7 +132,7 @@ CRONTAB_OR_INTERVAL = (
 ) >> cast_crontab_or_interval
 INTERVAL = (TIMEDELTA | STRING | POSITIVE_INT) >> cast_interval  # pylint: disable=E1131
 INTERVAL_INT_SECONDS = (TIMEDELTA | STRING | POSITIVE_INT) >> (  # pylint: disable=E1131
-    lambda x: cast_interval(x).total_seconds()
+    lambda x: int(cast_interval(x).total_seconds())
 )
 PARAMS = Mapping(STRING, ANY)
 VERSION = Enum(1)

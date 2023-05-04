@@ -16,18 +16,21 @@ python = "^3.9"
 croniter = "*"
 jinja2 = "^3"
 trafaret-config = "2.0.2"
-trafaret = "^1.0,<2"
+trafaret = "2.0.2"
 
 [tool.poetry.dev-dependencies]
-apache-airflow = "^2.1"
 black = "*"
 coverage = "*"
 flake8 = "*"
 isort = "*"
 pylint = "*"
 pytest = "*"
+pytest-pudb = "*"
 sphinx-rtd-theme = "*"
 sphinx = "*"
+
+[tool.poetry.group.airflow.dependencies]
+apache-airflow = "^2.1"
 
 [build-system]
 requires = ["poetry-core"]
