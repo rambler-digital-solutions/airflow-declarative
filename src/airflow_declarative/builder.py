@@ -15,9 +15,9 @@
 # limitations under the License.
 #
 
-from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .compat import test_cycle
+from airflow.utils.dag_cycle_tester import check_cycle
+
 from .schema import ensure_schema
 
 
@@ -90,7 +90,7 @@ def build_dag(dag_id, schema, dag_class, operator_class, sensor_class):
 
     build_flow(dict(operators, **sensors), schema.get("flow", {}))
 
-    test_cycle(dag)
+    check_cycle(dag)
 
     return dag
 
@@ -101,7 +101,7 @@ def build_sensor(dag, sensor_id, sensor_schema, sensor_class):
     :param str sensor_id: Sensor ID.
     :param dict sensor_schema: Sensor definition schema.
     :param type sensor_class: Airflow sensor class.
-    :rtype: airflow.operators.sensors.BaseSensorOperator
+    :rtype: airflow.sensors.base.BaseSensorOperator
     """
     return build_task(dag, sensor_id, sensor_schema, task_class=sensor_class)
 
@@ -112,7 +112,7 @@ def build_operator(dag, operator_id, operator_schema, operator_class):
     :param str operator_id: Operator ID.
     :param dict operator_schema: Operator definition schema.
     :param type operator_class: Airflow operator class.
-    :rtype: airflow.operators.BaseOperator
+    :rtype: airflow.models.BaseOperator
     """
     return build_task(dag, operator_id, operator_schema, task_class=operator_class)
 
@@ -123,7 +123,7 @@ def build_task(dag, task_id, schema, task_class):
     :param str task_id: Task ID.
     :param dict schema: Task schema.
     :param type task_class: Airflow operator class.
-    :rtype: airflow.operators.BaseOperator
+    :rtype: airflow.models.BaseOperator
     """
     args = schema.get("args", {})
 

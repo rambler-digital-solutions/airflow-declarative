@@ -15,21 +15,20 @@
 # limitations under the License.
 #
 
-from __future__ import absolute_import, division, print_function, unicode_literals
 
 import json
 import shlex
 import subprocess
 import sys
+from collections.abc import Iterable, Mapping
 from itertools import chain
 
 import jinja2
 import yaml
 from jinja2.ext import Extension
 from jinja2.lexer import Token
-from trafaret import str_types
+from trafaret.base import STR_TYPES
 
-from .compat import Iterable, Mapping
 from .schema import dump, ensure_schema
 
 
@@ -40,7 +39,7 @@ except ImportError:
 
 
 def yaml_filter(obj):
-    if isinstance(obj, str_types):
+    if isinstance(obj, STR_TYPES):
         return obj
     elif isinstance(obj, jinja2.Undefined):
         return ""
@@ -165,7 +164,7 @@ def transform_schema_with_items(schema, items):
 def transform_value_with_item(value, item):
     if isinstance(value, Mapping):
         return transform_dict_with_item(value, item)
-    elif isinstance(value, str_types):
+    elif isinstance(value, STR_TYPES):
         return transform_string_with_item(value, item)
     elif isinstance(value, Iterable):
         return transform_list_with_item(value, item)
@@ -195,7 +194,7 @@ def transform_string_with_item(string, item, env=ENV):
 def merge(base, other):
     if isinstance(base, Mapping) and isinstance(other, Mapping):
         return merge_mappings(base, other)
-    elif isinstance(base, str_types) and isinstance(other, str_types):
+    elif isinstance(base, STR_TYPES) and isinstance(other, STR_TYPES):
         return base
     elif isinstance(base, Iterable) and isinstance(other, Iterable):
         return merge_iterable(base, other)

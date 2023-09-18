@@ -1,0 +1,4 @@
+# configuration for airflow
+export AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite://
+export AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+export AIRFLOW__CORE__DEFAULT_TIMEZONE=utc

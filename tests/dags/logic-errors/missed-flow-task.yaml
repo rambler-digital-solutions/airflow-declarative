@@ -20,9 +20,9 @@ dags:
       start_date: 2017-07-27
     operators:
       foo:
-        class: airflow.operators.dummy_operator:DummyOperator
+        class: airflow.operators.empty:EmptyOperator
       bar:
-        class: airflow.operators.dummy_operator:DummyOperator
+        class: airflow.operators.empty:EmptyOperator
     flow:
       foo:
       - bar

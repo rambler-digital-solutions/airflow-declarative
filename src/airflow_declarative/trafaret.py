@@ -15,22 +15,16 @@
 # limitations under the License.
 #
 
-from __future__ import absolute_import, division, print_function, unicode_literals
 
 import datetime
 import importlib
 import inspect
 import re
+from inspect import signature
 
 import trafaret as t
 from croniter import croniter
 from trafaret import Any, Bool, Dict, Email, Enum, Int, Key, List, Mapping, Null, String
-
-
-try:
-    from inspect import signature
-except ImportError:  # pragma: no cover
-    from funcsigs import signature  # noqa
 
 
 __all__ = (

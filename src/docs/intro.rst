@@ -25,7 +25,7 @@ in Python: `<https://airflow.apache.org/tutorial.html>`_.
 Python equivalents.
 
 The public API is pretty simple: there are just 2 functions, both
-returning the :class:`airflow.models.DAG` instances:
+returning the :class:`airflow.models.dag.DAG` instances:
 
 .. autofunction:: airflow_declarative.from_path
 

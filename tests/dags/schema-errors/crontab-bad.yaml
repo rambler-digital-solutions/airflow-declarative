@@ -17,8 +17,8 @@
 dags:
   dag:
     args:
-      schedule_interval: 99 0 * * *
+      schedule: 99 0 * * *
       start_date: 2017-07-27
     operators:
       task:
-        class: airflow.operators.dummy_operator:DummyOperator
+        class: airflow.operators.empty:EmptyOperator

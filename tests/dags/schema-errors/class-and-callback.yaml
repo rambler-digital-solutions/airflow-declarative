@@ -20,11 +20,11 @@ dags:
       start_date: 2017-07-27
     operators:
       operator:
-        class: airflow.operators.dummy_operator:DummyOperator
+        class: airflow.operators.empty:EmptyOperator
         callback: tests.utils:operator_callback
     sensors:
       sensor:
-        class: airflow.sensors.http_sensor:HttpSensor
+        class: airflow.providers.http.sensors.http:HttpSensor
         args:
           endpoint: http://localhost
         callback_args:

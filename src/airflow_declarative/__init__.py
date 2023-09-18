@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-from __future__ import absolute_import, division, print_function, unicode_literals
 
 from . import builder, schema, transformer
 
@@ -27,7 +26,7 @@ def from_path(path):
     """Load DAGs from a YAML file.
 
     :param str path: A path to the declarative YAML file.
-    :rtype: list[airflow.models.DAG]
+    :rtype: list[airflow.models.dag.DAG]
     """
     return from_dict(schema.from_path(path))
 
@@ -36,7 +35,7 @@ def from_dict(schema):
     """Load DAGs from a dict (i.e. the parsed YAML file contents).
 
     :param dict schema: The declarative YAML schema.
-    :rtype: list[airflow.models.DAG]
+    :rtype: list[airflow.models.dag.DAG]
     """
     return builder.build_dags(transform(schema))
 

@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-from __future__ import absolute_import, division, print_function, unicode_literals
 
 import datetime
 import types
@@ -113,6 +112,7 @@ Dumper.add_representer(types.FunctionType, Dumper.represent_callable)
 Dumper.add_multi_representer(dict, Dumper.represent_dict)
 Dumper.add_multi_representer(list, Dumper.represent_list)
 Dumper.add_multi_representer(tuple, Dumper.represent_list)
+Dumper.add_multi_representer(type, Dumper.represent_callable)
 
 
 ANY = Any()
@@ -127,10 +127,12 @@ STRING = String()
 TIMEDELTA = TimeDelta()
 
 CRON_PRESETS = Enum("@once", "@hourly", "@daily", "@weekly", "@monthly", "@yearly")
-CRONTAB_OR_INTERVAL = (TIMEDELTA | STRING | POSITIVE_INT) >> cast_crontab_or_interval
-INTERVAL = (TIMEDELTA | STRING | POSITIVE_INT) >> cast_interval
-INTERVAL_INT_SECONDS = (TIMEDELTA | STRING | POSITIVE_INT) >> (
-    lambda x: cast_interval(x).total_seconds()
+CRONTAB_OR_INTERVAL = (
+    TIMEDELTA | STRING | POSITIVE_INT  # pylint: disable=E1131
+) >> cast_crontab_or_interval
+INTERVAL = (TIMEDELTA | STRING | POSITIVE_INT) >> cast_interval  # pylint: disable=E1131
+INTERVAL_INT_SECONDS = (TIMEDELTA | STRING | POSITIVE_INT) >> (  # pylint: disable=E1131
+    lambda x: int(cast_interval(x).total_seconds())
 )
 PARAMS = Mapping(STRING, ANY)
 VERSION = Enum(1)
@@ -233,14 +235,16 @@ DAG_ARGS = Dict(
         OptionalKey("max_active_runs"): POSITIVE_INT,
         OptionalKey("orientation"): STRING,
         OptionalKey("params"): PARAMS,
-        OptionalKey("schedule_interval"): NULL | CRON_PRESETS | CRONTAB_OR_INTERVAL,
+        OptionalKey("schedule"): NULL | CRON_PRESETS | CRONTAB_OR_INTERVAL,
         OptionalKey("sla_miss_callback"): CALLBACK,
         OptionalKey("start_date"): DATE,
         OptionalKey("tags"): List(STRING),
     }
 )
 
-WITH_ITEMS = List(ANY) | Dict(using=CALLBACK) | Dict(from_stdout=STRING)
+WITH_ITEMS = (
+    List(ANY) | Dict(using=CALLBACK) | Dict(from_stdout=STRING)  # pylint: disable=E1131
+)
 
 DO_TEMPLATE = Dict(
     {

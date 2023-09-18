@@ -115,7 +115,7 @@ DAG_ARGS
 --------
 
 ``DAG_ARGS`` atom defines the ``__init__`` arguments of an Airflow DAG.
-The actual meaning of these args can be found in the :class:`airflow.models.DAG`
+The actual meaning of these args can be found in the :class:`airflow.models.dag.DAG`
 doc page.
 
 
@@ -129,18 +129,18 @@ schemas are different. They both define an Airflow operator (note that Sensors
 in Airflow are considered to be Operators).
 
 For an Operator, the ``args`` (the ``OPERATOR_ARGS`` atom) are
-the ``__init__`` args of the :class:`airflow.models.BaseOperator`.
+the ``__init__`` args of the :class:`airflow.models.baseoperator.BaseOperator`.
 
 For a Sensor, the ``args`` (the ``SENSOR_ARGS`` atom) are
 the ``__init__`` args of
-the :class:`airflow.sensors.base_sensor_operator.BaseSensorOperator`.
+the :class:`airflow.sensors.base.BaseSensorOperator`.
 
 The ``OPERATOR``/``SENSOR`` callable might be specified as a class.
-Example for :class:`airflow.operators.bash_operator.BashOperator`:
+Example for :class:`airflow.operators.bash.BashOperator`:
 
 .. code-block:: yaml
 
-    class: airflow.operators.bash_operator:BashOperator
+    class: airflow.operators.bash:BashOperator
     args:
       bash_command: 'echo "Hello World {{ ds }}"'
 
@@ -176,7 +176,7 @@ The ``callback`` might also be a class::
 be defined with ``class``). The distinction between the ``args`` and
 the ``callback_args`` is simple:
 
-- ``args`` are the ``__init__`` args for the :class:`airflow.models.BaseOperator`,
+- ``args`` are the ``__init__`` args for the :class:`airflow.models.baseoperator.BaseOperator`,
   which is used under the hood to wrap the ``callback``;
 - ``callback_args`` are the additional kwargs which would be passed to
   the ``callback`` along with the task ``context``.
@@ -185,8 +185,8 @@ the ``callback_args`` is simple:
 default_args / defaults
 -----------------------
 
-``default_args`` is a standard :class:`airflow.models.DAG` ``__init__``
-arg which specifies the default args of a :class:`airflow.models.BaseOperator`.
+``default_args`` is a standard :class:`airflow.models.dag.DAG` ``__init__``
+arg which specifies the default args of a :class:`airflow.models.baseoperator.BaseOperator`.
 These args would be supplied to all DAG's operators and sensors.
 
 The ``defaults`` dict is a Declarative's extension which allows to specify

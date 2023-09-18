@@ -42,6 +42,6 @@ The schema validation could be automated with the following test:
 
 This test assumes that all of your declarative DAGs are located in
 the ``share/airflow`` directory. It loads all yamls from that directory,
-validates their schemas and transforms them to :class:`airflow.models.DAG`
+validates their schemas and transforms them to :class:`airflow.models.dag.DAG`
 instances. If a declarative DAG passes this test, then it can be loaded
 by the actual Airflow.

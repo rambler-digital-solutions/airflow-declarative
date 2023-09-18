@@ -94,7 +94,7 @@ To achieve that, the following (roughly) should be done:
 
 ::
 
-    AIRFLOW_VERSION=1.10.4
+    AIRFLOW_VERSION=2.3.1
     AIRFLOW_DEPS=celery,postgres
 
     curl -o declarative.patch https://raw.githubusercontent.com/rambler-digital-solutions/airflow-declarative/master/patches/${AIRFLOW_VERSION}.patch
